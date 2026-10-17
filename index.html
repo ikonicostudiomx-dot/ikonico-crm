@@ -973,9 +973,10 @@ function itemForm(it, presetDate, preset){
   const body = `<input type="hidden" name="id" value="${esc(it.id||'')}">
   <div class="row2"><div class="f"><label>Fecha de inicio</label><input type="date" name="start_date" required value="${esc(it.start_date||presetDate||todayStr())}" ${ro?'disabled':''}></div>
   <div class="f"><label>Fecha de fin (opcional)</label><input type="date" name="end_date" value="${esc(it.end_date||'')}" ${ro?'disabled':''}></div></div>
-  <div class="row2"><div class="f"><label>Cliente</label><select name="client_id" id="it-client" ${ro?'disabled':''}>${clientsOpt}</select></div>
-  <div class="f"><label>Folio / número de video</label><input type="text" name="video_number" value="${esc(it.video_number||preset.video_number||'')}" ${ro?'disabled':''} placeholder="Ej. 3"></div></div>
-  <div class="f"><label>Título o nota del video</label><input type="text" name="title" value="${esc(it.title||preset.title||'')}" ${ro?'disabled':''}></div>
+  <div class="f"><label>Cliente</label><select name="client_id" id="it-client" ${ro?'disabled':''}>${clientsOpt}</select></div>
+  <div class="f"><label>Guion</label><select id="it-script" ${ro?'disabled':''}></select><div class="hint" id="it-script-hint"></div></div>
+  <div class="row2"><div class="f"><label>Folio / número de video</label><input type="text" name="video_number" id="it-vn" value="${esc(it.video_number||preset.video_number||'')}" ${ro?'disabled':''} placeholder="Ej. 10.3"></div>
+  <div class="f"><label>Título del video</label><input type="text" name="title" id="it-title" value="${esc(it.title||preset.title||'')}" ${ro?'disabled':''}></div></div>
   <div class="f"><label>Responsable (editor)</label><select name="editor_id" id="it-editor" ${ro?'disabled':''}>${memberOptions(it.editor_id || preset.editor_id)}</select></div>
   <div class="f"><label>Progreso de edición</label><div class="range"><input type="range" name="progress" id="it-prog" min="0" max="100" step="5" value="${prog}"><b id="it-prog-v">${prog}%</b></div>
     <div class="bar" style="margin-top:8px"><i id="it-bar" style="width:${prog}%"></i></div></div>
@@ -1004,8 +1005,34 @@ function itemForm(it, presetDate, preset){
     p.addEventListener('input', sync);
     d.addEventListener('click', () => { p.value = +p.value === 100 ? 95 : 100; sync(); });
     const folder = () => { const c = client(cs.value), u = c ? safeUrl(c.folder_link) : ''; if(u){ f.href = u; f.style.opacity = 1; f.style.pointerEvents = ''; f.textContent = 'Abrir ' + linkLabel(u); } else { f.removeAttribute('href'); f.style.opacity = .4; f.style.pointerEvents = 'none'; f.textContent = 'Sin carpeta'; } };
-    cs.addEventListener('change', () => { const c = client(cs.value); if(c && c.editor_id && !ed.value) ed.value = c.editor_id; folder(); });
-    sync(); folder();
+    // Guiones del cliente: al elegir uno se llenan folio y título; al escribir un folio que ya tiene guion, se elige solo
+    const sel = $('#it-script'), hint = $('#it-script-hint'), vn = $('#it-vn'), ti = $('#it-title');
+    const norm = v => String(v || '').trim().replace(/^#/, '');
+    const scripts = () => S.scripts.filter(s => s.client_id === cs.value).sort(byFolio);
+    const booked = s => S.items.some(x => x.id !== it.id && x.client_id === s.client_id && norm(x.video_number) === norm(s.video_number));
+    const showHint = () => {
+      const s = S.scripts.find(x => x.id === sel.value);
+      hint.textContent = s ? `Estado del guion: ${s.status}${booked(s) ? ' · ojo: este folio ya está en el calendario' : ''}` : (cs.value && !scripts().length ? 'Este cliente todavía no tiene guiones.' : '');
+    };
+    const fillScripts = () => {
+      const list = scripts(), cur = list.find(s => norm(s.video_number) === norm(vn.value));
+      sel.innerHTML = `<option value="">${cs.value ? (list.length ? '— Elige un guion del cliente —' : '— Sin guiones —') : '— Primero elige un cliente —'}</option>` +
+        list.map(s => `<option value="${s.id}" ${cur && cur.id === s.id ? 'selected' : ''}>${esc(s.video_number)} — ${esc(s.title || 'Sin título')}${booked(s) ? ' · ya agendado' : ''}</option>`).join('');
+      showHint();
+    };
+    sel.addEventListener('change', () => {
+      const s = S.scripts.find(x => x.id === sel.value);
+      if(s){ vn.value = s.video_number; ti.value = s.title || ''; }
+      showHint();
+    });
+    vn.addEventListener('input', () => {
+      const s = scripts().find(x => norm(x.video_number) === norm(vn.value));
+      sel.value = s ? s.id : '';
+      if(s && !ti.value.trim()) ti.value = s.title || '';
+      showHint();
+    });
+    cs.addEventListener('change', () => { const c = client(cs.value); if(c && c.editor_id && !ed.value) ed.value = c.editor_id; folder(); fillScripts(); });
+    sync(); folder(); fillScripts();
   }, editing && isAdmin() ? async () => {
     if(!confirm('¿Eliminar esta tarjeta del calendario?')) return false;
     const r = await delRow('calendar_items', it.id);
