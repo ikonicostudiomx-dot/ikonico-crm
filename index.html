@@ -314,7 +314,7 @@ function render(){
 function loginView(){
   if(S.needBoot){
     return `<div class="login"><div class="box">${logoImgs()}
-      <h1>Bienvenida</h1><p>Crea tu usuario de Dirección. Con este PIN entrarás siempre al CRM.</p>
+      <h1>Bienvenido</h1><p>Crea tu usuario de Dirección. Con este PIN entrarás siempre al CRM.</p>
       <form id="boot-form" autocomplete="off">
         <div class="f" style="text-align:left"><label>Tu nombre</label><input type="text" name="name" required placeholder="Ej. Sofía Loarca"></div>
         <div class="f" style="text-align:left"><label>Tu PIN (4 dígitos)</label><input type="password" name="pin" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" required placeholder="••••"></div>
@@ -325,7 +325,7 @@ function loginView(){
   const dots = [0,1,2,3].map(i => `<i class="${i < S.pin.length ? 'on':''}"></i>`).join('');
   const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'].map(k => k === '' ? '<span></span>' : `<button data-act="key" data-k="${k}">${k}</button>`).join('');
   return `<div class="login"><div class="box">${logoImgs()}
-    <h1>Ingresa tu PIN</h1><p>Producción de eventos y contenido</p>
+    <h1>Bienvenido</h1><p>Ingresa tu PIN · Producción de eventos y contenido</p>
     <div class="pin-dots">${dots}</div><div class="pad">${keys}</div>
     <div class="err">${esc(S.loginErr)}</div></div></div>`;
 }
