@@ -64,6 +64,7 @@ th{text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
 td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
 tr:last-child td{border-bottom:0}
 .badge{display:inline-block;border-radius:20px;padding:3px 11px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;background:var(--panel2);color:var(--sky)}
+:root[data-theme="light"] .badge{color:#3f6a75}
 .badge.dir{background:rgba(255,75,0,.16);color:#ff8a57}
 .badge.cm{background:rgba(174,188,240,.18);color:var(--blue)}
 .badge.ok{background:rgba(95,207,151,.16);color:var(--ok)}
@@ -92,6 +93,36 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .script .txt{color:var(--muted);white-space:pre-wrap;max-height:110px;overflow:hidden;font-size:14px}
 .script .side{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 
+/* página del cliente */
+.card.open{cursor:pointer;transition:border-color .15s,transform .15s}
+.card.open:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cp-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.cp-head .em{font-size:40px;line-height:1}
+.cp-head h2{font-size:40px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;background:var(--panel2);white-space:nowrap}
+.chip .dot{width:8px;height:8px}
+.cp-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+.cp-tabs div{padding:10px 16px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.cp-tabs .on{color:var(--accent);border-bottom-color:var(--accent)}
+.cbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.cbox h4{margin:0 0 4px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase}
+.cbox p{margin:0;color:var(--muted);font-size:13px}
+.linkrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.linkrow input{flex:1;min-width:220px}
+.sc{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:10px;overflow:hidden}
+.sc.st-listo{background:rgba(95,207,151,.08);border-color:rgba(95,207,151,.35)}
+.sc-h{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.sc-h b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.sc-h .car{transition:transform .15s;color:var(--muted)}
+.sc.open .car{transform:rotate(180deg)}
+.st{border-radius:20px;padding:3px 10px;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;background:var(--panel2);color:var(--muted);white-space:nowrap}
+.st.listo{background:var(--ok);color:#0d2a1c}
+.st.edicion{background:rgba(174,188,240,.2);color:var(--blue)}
+.sc-b{padding:0 16px 16px;border-top:1px solid var(--line)}
+.sc-b .txt{white-space:pre-wrap;padding-top:14px;line-height:1.55}
+.sc-meta{font-size:12px;color:var(--muted);margin-top:12px}
+.sc-a{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
 /* calendar */
 .cal-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .cal-head h3{font-size:34px;min-width:230px;text-transform:capitalize}
@@ -105,9 +136,21 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .cell.out{opacity:.38}
 .cell.today .num{background:var(--accent);color:#fff}
 .num{align-self:flex-end;font-size:12px;font-weight:600;width:24px;height:24px;border-radius:50%;display:grid;place-items:center}
-.pill{border-radius:7px;padding:4px 7px;font-size:12px;font-weight:600;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:6px;align-items:center;justify-content:space-between}
-.pill .pg{font-size:10.5px;opacity:.85;flex:none}
-.pill.done{opacity:.6;text-decoration:line-through}
+.pill{position:relative;border-radius:7px;padding:5px 7px 6px;font-size:12px;cursor:pointer;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-left:4px solid var(--ed,#aebcf0);min-width:0}
+.pill:hover{border-color:var(--ed,#aebcf0)}
+.pill .t{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:22px}
+.pill .who{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);margin-top:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pill .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--ed,#aebcf0)}
+.pill .ft{display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap}
+.pill .pg{white-space:nowrap;font-size:10.5px;font-weight:700;border-radius:20px;padding:1px 7px;background:var(--line);color:var(--text)}
+.pill .chk{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);background:transparent;color:#fff;font-size:12px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0}
+.pill .chk:hover{border-color:var(--ok)}
+.pill .gs{white-space:nowrap;margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:5px;font-size:11px;padding:1px 5px;cursor:pointer;color:var(--text)}
+.pill .gs:hover{border-color:var(--accent)}
+.pill.done{border-left-color:var(--ok)}
+.pill.done .pg{background:rgba(95,207,151,.18);color:var(--ok)}
+.pill.done .chk{background:var(--ok);border-color:var(--ok)}
+.pill.done .t{opacity:.75}
 .mytasks{margin-bottom:14px;color:var(--muted);font-size:14px}
 .mytasks summary{cursor:pointer;color:var(--text);font-weight:600}
 .mytasks pre{white-space:pre-wrap;font-family:inherit;margin:8px 0 0}
@@ -232,7 +275,7 @@ async function delRow(tbl,id){
 const S = {
   token: store.get('ikonico_token',''), me:null, view:'calendar', loading:true, needBoot:false,
   team:[], clients:[], scripts:[], items:[],
-  scriptClient:'', cal:{y:new Date().getFullYear(), m:new Date().getMonth(), editor:''},
+  scriptClient:'', clientId:'', openScript:null, prevView:'', cal:{y:new Date().getFullYear(), m:new Date().getMonth(), editor:''},
   clientFilter:'activos', pin:'', loginErr:'', theme: store.get('ikonico_theme','dark'), zoom: +store.get('ikonico_zoom','100')
 };
 const isAdmin = () => S.me && S.me.role === 'Dirección';
@@ -289,11 +332,14 @@ function render(){
   const tabs = [];
   if(isAdmin()) tabs.push(['team','Team']);
   if(canManage()) tabs.push(['clients','Clientes']);
-  tabs.push(['scripts', canManage() ? 'Guiones' : 'Mis guiones']);
+  if(!canManage()) tabs.push(['scripts','Mis guiones']);
   tabs.push(['calendar','Calendario de edición']);
-  if(!tabs.find(t => t[0] === S.view)) S.view = tabs[0][0];
+  if(S.view === 'client' && !client(S.clientId)) S.view = S.prevView || '';
+  if(S.view !== 'client' && !tabs.find(t => t[0] === S.view)) S.view = tabs[0][0];
+  const activeTab = S.view === 'client' ? (canManage() ? 'clients' : S.prevView) : S.view;
   let main = '';
   if(S.view === 'team') main = teamView();
+  else if(S.view === 'client') main = clientPage();
   else if(S.view === 'clients') main = clientsView();
   else if(S.view === 'scripts') main = scriptsView();
   else main = calendarView();
@@ -306,7 +352,7 @@ function render(){
     <div class="zoom"><button data-act="zoom" data-d="-10">−</button><span>${S.zoom}%</span><button data-act="zoom" data-d="10">+</button></div>
     <button class="ghost" data-act="logout">Cerrar sesión</button>
   </div>
-  <div class="tabs">${tabs.map(([k,l]) => `<div class="tab ${S.view===k?'active':''}" data-act="tab" data-v="${k}">${l}</div>`).join('')}</div>
+  <div class="tabs">${tabs.map(([k,l]) => `<div class="tab ${activeTab===k?'active':''}" data-act="tab" data-v="${k}">${l}</div>`).join('')}</div>
   <main>${main}</main>`;
 }
 
@@ -426,26 +472,67 @@ function clientsView(){
   else if(S.clientFilter === 'inactivos') list = list.filter(c => c.status === 'Inactivo');
   const cards = list.map(c => {
     const ed = [member(c.editor_id), member(c.editor2_id)].filter(Boolean).map(m => esc(m.name)).join(' + ');
-    const url = safeUrl(c.folder_link);
     const nScripts = S.scripts.filter(s => s.client_id === c.id).length;
-    return `<div class="card ${c.status==='Inactivo'?'inactive':''}">
+    return `<div class="card open ${c.status==='Inactivo'?'inactive':''}" data-act="client-open" data-id="${c.id}" title="Abrir la página de ${esc(c.name)}">
       <div class="top"><div class="emoji">${esc(c.emoji||'🎬')}</div><h3>${esc(c.name)}</h3></div>
       <div class="meta">
         <div><span class="badge ${c.status==='Inactivo'?'off':'ok'}">${esc(c.status)}</span> <span class="badge">${c.client_type==='recurrente' ? 'Recurrente' + (c.videos_per_month ? ' · ' + c.videos_per_month + ' videos/mes' : '') : 'Por proyecto'}</span></div>
         <div>Editor: ${ed || 'sin asignar'}</div>
         ${member(c.cm_id) ? `<div>CM: ${esc(member(c.cm_id).name)}</div>` : ''}
         <div>${nScripts} guion${nScripts===1?'':'es'}</div>
-      </div>
-      <div class="actions">
-        <button class="btn small" data-act="client-scripts" data-id="${c.id}">Guiones</button>
-        ${url ? `<a class="btn sec small" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">Abrir ${linkLabel(url)}</a>` : ''}
-        ${isAdmin() ? `<button class="btn sec small" data-act="client-edit" data-id="${c.id}">Editar</button><button class="btn danger small" data-act="client-del" data-id="${c.id}">×</button>` : ''}
       </div></div>`;
   }).join('');
   return `<div class="page-head"><h2>Clientes</h2><div class="spacer"></div>
     <select data-change="client-filter" style="width:auto"><option value="activos" ${S.clientFilter==='activos'?'selected':''}>Activos</option><option value="inactivos" ${S.clientFilter==='inactivos'?'selected':''}>Inactivos</option><option value="todos" ${S.clientFilter==='todos'?'selected':''}>Todos</option></select>
     ${isAdmin() ? `<button class="btn" data-act="client-new">+ Nuevo cliente</button>` : ''}</div>
     ${list.length ? `<div class="grid">${cards}</div>` : `<div class="empty"><h3>Aún no hay clientes</h3>Da de alta al primero con “Nuevo cliente”.</div>`}`;
+}
+const stSlug = st => st === 'Listo' ? 'listo' : st === 'En edición' ? 'edicion' : 'pend';
+function clientPage(){
+  const c = client(S.clientId);
+  const eds = [member(c.editor_id), member(c.editor2_id)].filter(Boolean), cm = member(c.cm_id);
+  const edUrl = safeUrl(c.folder_link), clUrl = safeUrl(c.client_folder_link);
+  const list = S.scripts.filter(s => s.client_id === c.id)
+    .sort((a,b) => String(a.video_number).localeCompare(String(b.video_number), undefined, {numeric:true}));
+  const chips = eds.map(m => `<span class="chip"><i class="dot" style="background:${esc(m.color||'#ff4b00')}"></i>${esc(m.name)}</span>`).join('') +
+    (cm ? `<span class="chip"><i class="dot" style="background:${esc(cm.color||'#aebcf0')}"></i>CM · ${esc(cm.name)}</span>` : '');
+  const items = list.map(s => {
+    const open = S.openScript === s.id, slug = stSlug(s.status);
+    const v = String(s.video_number).trim().replace(/^#/, '');
+    const cal = S.items.filter(i => i.client_id === c.id && String(i.video_number||'').trim().replace(/^#/, '') === v);
+    const calTxt = cal.map(i => { const e = member(i.editor_id); return `${fmtDay(i.start_date)}${i.end_date && i.end_date !== i.start_date ? ' – ' + fmtDay(i.end_date) : ''} · ${esc(e ? e.name : 'sin responsable')} · ${i.done ? 'listo' : i.progress + '%'}`; }).join('<br>');
+    return `<div class="sc st-${slug} ${open?'open':''}" id="sc-${s.id}">
+      <div class="sc-h" data-act="sc-toggle" data-id="${s.id}"><b>${esc(s.video_number)} — ${esc(s.title || 'Sin título')}</b><span class="st ${slug}">${esc(s.status)}</span><span class="car">▾</span></div>
+      ${open ? `<div class="sc-b"><div class="txt">${esc(s.content || 'Sin indicaciones todavía.')}</div>
+        <div class="sc-meta">${cal.length ? '📅 En calendario: ' + calTxt : 'Todavía no está en el calendario de edición.'}</div>
+        ${canManage() ? `<div class="sc-a"><button class="btn sec small" data-act="script-edit" data-id="${s.id}">Editar</button>
+          <button class="btn sec small" data-act="script-sched" data-id="${s.id}">Programar</button>
+          ${isAdmin() ? `<button class="btn danger small" data-act="script-del" data-id="${s.id}">Eliminar</button>` : ''}</div>` : ''}</div>` : ''}
+    </div>`;
+  }).join('');
+  const clientBox = canManage() ? `<div class="cbox"><h4>Carpeta de Frame para el cliente</h4>
+    <p>Es distinta a la de los editores. Es la que verá el cliente en su portal.</p>
+    ${clUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(clUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(clUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(clUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Abrir</a></div>`
+      : `<div class="linkrow"><span class="hint">Aún no está capturada.${isAdmin() ? ' Agrégala con “Editar”.' : ''}</span></div>`}</div>` : '';
+  return `<div class="cp-head">
+      <button class="ghost" data-act="client-back">‹ Volver</button>
+      <span class="em">${esc(c.emoji||'🎬')}</span><h2>${esc(c.name)}</h2>${chips}
+      <div class="spacer"></div>
+      ${edUrl ? `<a class="btn small" href="${esc(edUrl)}" target="_blank" rel="noopener" style="text-decoration:none">📁 Carpeta ${linkLabel(edUrl)}</a>` : ''}
+      ${isAdmin() ? `<button class="btn sec small" data-act="client-edit" data-id="${c.id}">✎ Editar</button>` : ''}
+    </div>
+    <div class="cp-tabs"><div class="on">Guiones</div></div>
+    ${clientBox}
+    <div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'}</span><div class="spacer"></div>
+      ${canManage() ? `<button class="btn" data-act="script-new">+ Nuevo guion</button>` : ''}</div>
+    ${list.length ? items : `<div class="empty"><h3>Sin guiones todavía</h3>${canManage() ? 'Crea el primero: número de video y qué quieres exactamente en él, para que el editor lo entienda.' : 'Aquí verás las indicaciones de cada video.'}</div>`}`;
+}
+function fmtDay(s){ if(!s) return ''; const [y,m,d] = s.split('-').map(Number); return `${d} ${MON_SHORT[m-1]}`; }
+function openClient(id, scriptId){
+  if(S.view !== 'client') S.prevView = S.view;
+  S.clientId = id; S.scriptClient = id; S.openScript = scriptId || null; S.view = 'client'; render();
+  const el = scriptId && document.getElementById('sc-' + scriptId);
+  if(el) el.scrollIntoView({block:'center'}); else window.scrollTo(0, 0);
 }
 function memberOptions(sel, role){
   const opts = S.team.filter(t => !role || t.role === role).map(t => `<option value="${t.id}" ${t.id===sel?'selected':''}>${esc(t.name)} · ${esc(t.role)}</option>`).join('');
@@ -458,8 +545,10 @@ function clientForm(c){
   <div class="row2"><div class="f"><label>Emoji identificador</label><input type="text" name="emoji" maxlength="4" value="${esc(c.emoji||'')}" placeholder="Ej. 🎓"></div>
   <div class="f"><label>Estado</label><select name="status"><option ${c.status!=='Inactivo'?'selected':''}>Activo</option><option ${c.status==='Inactivo'?'selected':''}>Inactivo</option></select></div></div>
   <div class="f"><label>Correo del cliente</label><input type="email" name="email" value="${esc(c.email||'')}" placeholder="cliente@ejemplo.com"></div>
-  <div class="f"><label>Link a la carpeta de contenido (Frame.io, Drive o Dropbox)</label><input type="text" name="folder_link" value="${esc(c.folder_link||'')}" placeholder="https://…">
-    <div class="hint">Este link se abre desde la tarjeta del calendario.</div></div>
+  <div class="f"><label>Link a su carpeta de Frame.io (para editores)</label><input type="text" name="folder_link" value="${esc(c.folder_link||'')}" placeholder="https://…">
+    <div class="hint">Se abre desde el calendario y desde la página del cliente.</div></div>
+  <div class="f"><label>Link de Frame para el cliente (lo verá en su portal)</label><input type="text" name="client_folder_link" value="${esc(c.client_folder_link||'')}" placeholder="https://… (carpeta compartida con el cliente)">
+    <div class="hint">Es distinto al de los editores. Este link aparecerá en el portal del cliente para que vea sus videos.</div></div>
   <div class="row2"><div class="f"><label>Tipo de cliente</label><select name="client_type" id="ct"><option value="recurrente" ${c.client_type!=='proyecto'?'selected':''}>Recurrente (iguala mensual)</option><option value="proyecto" ${c.client_type==='proyecto'?'selected':''}>Por proyecto / evento (ej. graduaciones)</option></select></div>
   <div class="f" id="vpm"><label>Videos al mes</label><input type="number" name="videos_per_month" min="0" max="99" value="${esc(c.videos_per_month ?? 4)}"></div></div>
   <div class="row2"><div class="f"><label>Editor asignado</label><select name="editor_id">${memberOptions(c.editor_id)}</select></div>
@@ -467,10 +556,10 @@ function clientForm(c){
   <div class="f"><label>Community manager</label><select name="cm_id">${memberOptions(c.cm_id)}</select></div>
   <div class="f"><label>Notas</label><textarea name="notes" rows="3">${esc(c.notes||'')}</textarea></div>`;
   openModal(editing ? 'Editar cliente' : 'Nuevo cliente', body, async fd => {
-    const link = (fd.get('folder_link')||'').trim();
-    if(link && !safeUrl(link)) throw new Error('El link debe empezar con https://');
+    const link = (fd.get('folder_link')||'').trim(), clink = (fd.get('client_folder_link')||'').trim();
+    if((link && !safeUrl(link)) || (clink && !safeUrl(clink))) throw new Error('Los links deben empezar con https://');
     const row = {name:fd.get('name').trim(), emoji:fd.get('emoji')||null, status:fd.get('status'), email:fd.get('email')||null,
-      folder_link:link||null, client_type:fd.get('client_type'),
+      folder_link:link||null, client_folder_link:clink||null, client_type:fd.get('client_type'),
       videos_per_month: fd.get('client_type')==='recurrente' && fd.get('videos_per_month') !== '' ? +fd.get('videos_per_month') : null,
       editor_id:fd.get('editor_id')||null, editor2_id:fd.get('editor2_id')||null, cm_id:fd.get('cm_id')||null, notes:fd.get('notes')||null};
     if(fd.get('id')) row.id = fd.get('id');
@@ -480,7 +569,13 @@ function clientForm(c){
   }, () => {
     const ct = $('#ct'), v = $('#vpm'); const sync = () => v.style.display = ct.value === 'recurrente' ? '' : 'none';
     ct.addEventListener('change', sync); sync();
-  });
+  }, editing && isAdmin() ? async () => {
+    if(!confirm(`¿Eliminar al cliente ${c.name}? También se borran sus guiones y sus videos del calendario. No se puede deshacer.`)) return false;
+    const r = await delRow('clients', c.id);
+    if(r && r.error) throw new Error(r.error === 'sin_funcion' ? 'El borrado aún no está activado en la base de datos.' : errMsg(r.error));
+    if(S.view === 'client') S.view = 'clients';
+    await refresh(); toast('Cliente eliminado'); return true;
+  } : null);
 }
 
 /* ---- Guiones ---- */
@@ -516,7 +611,7 @@ function scriptForm(s){
   <div class="f"><label>Título del video</label><input type="text" name="title" value="${esc(s.title||'')}" ${ro?'disabled':''} placeholder="Ej. Tour por las instalaciones"></div>
   <div class="f"><label>Guion / qué quieres en este video</label><textarea name="content" rows="12" ${ro?'disabled':''} placeholder="Tomas, textos en pantalla, música, duración, referencias…">${esc(s.content||'')}</textarea></div>`;
   openModal(editing ? (ro ? 'Guion' : 'Editar guion') : 'Nuevo guion', body, ro ? null : async fd => {
-    const row = {client_id:S.scriptClient, video_number:fd.get('video_number').trim(), title:fd.get('title')||null, content:fd.get('content')||null, status:fd.get('status')};
+    const row = {client_id:s.client_id || S.scriptClient, video_number:fd.get('video_number').trim(), title:fd.get('title')||null, content:fd.get('content')||null, status:fd.get('status')};
     if(fd.get('id')) row.id = fd.get('id');
     const r = await saveRow('scripts', row);
     if(r && r.error) throw new Error(errMsg(r.error));
@@ -525,6 +620,19 @@ function scriptForm(s){
 }
 
 /* ---- Calendario ---- */
+function scriptFor(it){
+  if(!it.client_id || !it.video_number) return null;
+  const v = String(it.video_number).trim().replace(/^#/, '');
+  return S.scripts.find(s => s.client_id === it.client_id && String(s.video_number).trim().replace(/^#/, '') === v) || null;
+}
+async function toggleDone(id){
+  const it = S.items.find(x => x.id === id); if(!it) return;
+  try{
+    const r = await rpc('crm_set_done', {p_token:T(), p_id:id, p_done:!it.done});
+    if(r && r.error){ toast(errMsg(r.error)); return; }
+    Object.assign(it, r); render(); toast(it.done ? 'Marcado como listo' : 'Reabierto');
+  }catch(e){ toast(e.message); }
+}
 function itemsOn(day){
   return S.items.filter(i => i.start_date <= day && day <= (i.end_date || i.start_date) && (!S.cal.editor || i.editor_id === S.cal.editor));
 }
@@ -540,9 +648,14 @@ function calendarView(){
     const ds = ymd(dy,dm,dd);
     const pills = itemsOn(ds).map(it => {
       const c = client(it.client_id), e = member(it.editor_id), col = (e && e.color) || '#aebcf0';
-      return `<div class="pill ${it.done?'done':''}" data-act="cal-item" data-id="${it.id}" style="background:${esc(col)};color:${inkFor(col)}" title="${esc((c?c.name:'')+' · '+(it.title||''))}">
-        <span style="overflow:hidden;text-overflow:ellipsis">${esc(c?(c.emoji||'')+' '+c.name:'Sin cliente')}${it.video_number?' · #'+esc(it.video_number):''}</span>
-        <span class="pg">${it.done?'✓':it.progress+'%'}</span></div>`;
+      const canDone = canManage() || (S.me && it.editor_id === S.me.id), sc = scriptFor(it);
+      const label = (it.video_number ? it.video_number + ' — ' : '') + (c ? c.name : 'Sin cliente');
+      return `<div class="pill ${it.done?'done':''}" data-act="cal-item" data-id="${it.id}" style="--ed:${esc(col)}" title="${esc(label+(it.title?' · '+it.title:''))}">
+        <div class="t">${esc(c&&c.emoji?c.emoji+' ':'')}${esc(label)}</div>
+        <div class="who"><i class="dot"></i>${esc(e ? e.name : 'Sin responsable')}</div>
+        <div class="ft"><span class="pg">${it.done?'✓ Listo':it.progress+'%'}</span>
+          ${sc ? `<button type="button" class="gs" data-act="cal-script" data-id="${sc.id}" title="Ver guion">📄 Guion</button>` : ''}</div>
+        ${canDone ? `<button type="button" class="chk" data-act="cal-done" data-id="${it.id}" title="${it.done?'Reabrir':'Marcar como listo'}">${it.done?'✓':''}</button>` : ''}</div>`;
     }).join('');
     cells += `<div class="cell ${out?'out':''} ${ds===tStr?'today':''}" data-act="cal-day" data-d="${ds}"><div class="num">${dd}</div>${pills}</div>`;
   }
@@ -653,7 +766,10 @@ const H = {
   'client-new':() => clientForm(),
   'client-edit':(t) => clientForm(client(t.dataset.id)),
   'client-del':(t) => { const c = client(t.dataset.id); confirmDelete('clients', t.dataset.id, `al cliente ${c ? c.name : ''} (también sus guiones y videos)`); },
-  'client-scripts':(t) => { S.scriptClient = t.dataset.id; S.view = 'scripts'; render(); },
+  'client-open':(t) => openClient(t.dataset.id),
+  'client-back':() => { S.view = S.prevView && S.prevView !== 'client' ? S.prevView : (canManage() ? 'clients' : 'calendar'); S.openScript = null; render(); window.scrollTo(0, 0); },
+  'sc-toggle':(t) => { S.openScript = S.openScript === t.dataset.id ? null : t.dataset.id; render(); },
+  copy:(t) => { const v = t.dataset.v; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast('Link copiado'), () => { prompt('Copia el link:', v); }); },
   'script-new':() => scriptForm(),
   'script-edit':(t) => scriptForm(S.scripts.find(x => x.id === t.dataset.id)),
   'script-del':(t) => confirmDelete('scripts', t.dataset.id, 'este guion'),
@@ -665,6 +781,8 @@ const H = {
   'cal-new':() => itemForm(null, todayStr()),
   'cal-day':(t, e) => { if(e.target.closest('.pill')) return; if(canManage()) itemForm(null, t.dataset.d); },
   'cal-item':(t) => itemForm(S.items.find(x => x.id === t.dataset.id)),
+  'cal-done':(t) => toggleDone(t.dataset.id),
+  'cal-script':(t) => { const s = S.scripts.find(x => x.id === t.dataset.id); if(s) openClient(s.client_id, s.id); },
   overlay:(t, e) => { if(e.target === t) closeModal(); }
 };
 document.addEventListener('click', e => {
