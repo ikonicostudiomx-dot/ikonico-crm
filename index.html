@@ -132,6 +132,31 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .portal .hero h1{font-size:44px}
 .portal .hero p{max-width:560px;margin:10px auto 0;color:var(--muted)}
 .portal .cp-tabs div{cursor:pointer}
+.evt{margin-bottom:16px}
+.evt table{min-width:860px;table-layout:fixed}
+.evt tr:not(.mh) th:nth-child(1){width:80px}.evt tr:not(.mh) th:nth-child(2){width:19%}.evt tr:not(.mh) th:nth-child(3){width:27%}
+.evt tr:not(.mh) th:nth-child(4),.evt tr:not(.mh) th:nth-child(5){width:118px}.evt tr:not(.mh) th:nth-child(6),.evt tr:not(.mh) th:nth-child(7){width:112px}.evt tr:not(.mh) th:nth-child(8){width:90px}
+.evt td{overflow:hidden;text-overflow:ellipsis}
+.evt th,.evt td{padding:10px 12px}
+.evt .mh th{background:var(--text);color:var(--bg);text-align:center;font-size:12px;letter-spacing:3px}
+.pcal-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pcal-head h3{font-size:30px;text-transform:capitalize;min-width:220px;text-align:center}
+.pcal .cell{min-height:96px;cursor:default;padding-top:34px}
+.pcal .cell:hover{background:transparent}
+.ev{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:6px 7px;font-size:12px;min-width:0}
+.ev b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev .pl{display:block;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev .evl{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.ev .evl a,.ev .evl span{font-size:11px;border-radius:5px;padding:2px 6px;text-decoration:none;white-space:nowrap}
+.ev .evl a{background:var(--accent);color:#fff;font-weight:600}
+.ev .evl span{background:var(--line);color:var(--muted)}
+.evlist{margin-top:18px}
+.evrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:10px}
+.evrow .d{font-family:var(--serif);font-size:26px;min-width:64px;color:var(--accent)}
+.evrow .tx{flex:1;min-width:180px}
+.evrow .tx small{display:block;color:var(--muted)}
+.evrow .bt{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:700px){ .pcal .ev .evl,.pcal .ev .pl{display:none} .pcal .cell{min-height:70px;padding:30px 3px 4px} .ev{padding:4px 5px;font-size:10.5px} }
 .vbox{text-align:center;padding:40px 20px}
 .vbox p{color:var(--muted);margin:0 0 18px}
 
@@ -140,10 +165,39 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .cal-head h3{font-size:34px;min-width:230px;text-transform:capitalize}
 .cal-head select{width:auto}
 .cal-head input[type=number]{width:96px}
-.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.cal{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.dows,.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 .cal .dow{padding:10px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);background:var(--panel2)}
-.cell{min-height:118px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
-.cell:nth-child(7n){border-right:0}
+.cell{position:relative;grid-row:1 / -1;min-height:118px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
+.cell.c7{border-right:0}
+.cell .num{position:absolute;top:5px;right:6px}
+.mbar{position:relative;z-index:2;margin:2px 4px;height:30px;display:flex;align-items:center;gap:7px;padding:0 8px;border-radius:7px;font-size:12px;cursor:pointer;min-width:0;overflow:hidden;white-space:nowrap;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-left:4px solid var(--ed,#aebcf0)}
+.mbar:hover{border-color:var(--ed,#aebcf0)}
+.mbar.from{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0}
+.mbar.to{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0}
+.mbar .bt{overflow:hidden;text-overflow:ellipsis;min-width:40px}
+.mbar .who{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis}
+.mbar .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--ed,#aebcf0)}
+.mbar .pg{white-space:nowrap;font-size:10.5px;font-weight:700;border-radius:20px;padding:1px 7px;background:var(--line)}
+.mbar .gs{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:5px;font-size:11px;padding:1px 5px;cursor:pointer;color:var(--text)}
+.mbar .chk{flex:none;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);background:transparent;color:#fff;font-size:12px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0}
+.mbar .ar{color:var(--muted);font-weight:700}
+.mbar .rz{position:absolute;right:0;top:0;bottom:0;width:12px;cursor:ew-resize;touch-action:none}
+.mbar .rz::after{content:'';position:absolute;right:3px;top:50%;width:4px;height:16px;transform:translateY(-50%);border-radius:3px;background:var(--ed,#aebcf0);opacity:.45}
+.mbar:hover .rz::after{opacity:1}
+.mbar.done{border-left-color:var(--ok);background:rgba(95,207,151,.10)}
+.mbar.done .pg{background:rgba(95,207,151,.18);color:var(--ok)}
+.mbar.done .chk{background:var(--ok);border-color:var(--ok)}
+body.resizing .mbar,body.resizing .pill{pointer-events:none}
+/* meta semanal */
+.goals{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.goals .gh{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.goals .gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 22px}
+.goal .gn{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.goal .gn span{font-weight:700}
+.goal .gb{height:10px;border-radius:10px;background:var(--panel2);overflow:hidden}
+.goal .gb i{display:block;height:100%;border-radius:10px;transition:width .4s}
+.goal.me .gn b::after{content:' · tú';color:var(--accent);font-weight:600}
 .cell:hover{background:var(--panel2)}
 .cell.out{opacity:.38}
 .cell.today .num{background:var(--accent);color:#fff}
@@ -163,8 +217,6 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .pill.done .pg{background:rgba(95,207,151,.18);color:var(--ok)}
 .pill.done .chk{background:var(--ok);border-color:var(--ok)}
 .pill.done .t{opacity:.75}
-.pill .day{font-size:10px;color:var(--muted);white-space:nowrap}
-.pill.cont{opacity:.82}
 .pill .rz{position:absolute;right:0;top:26px;bottom:0;width:12px;cursor:ew-resize;touch-action:none}
 .pill .rz::after{content:'';position:absolute;right:3px;top:50%;width:4px;height:18px;transform:translateY(-50%);border-radius:3px;background:var(--ed,#aebcf0);opacity:.35;transition:opacity .15s}
 .pill:hover .rz::after{opacity:1}
@@ -264,6 +316,7 @@ const ERR_TXT = {
   no_existe:'Ese guion ya no existe'
 };
 const PORTAL_KEY = (() => { try{ return new URLSearchParams(location.search).get('cliente') || ''; }catch(e){ return ''; } })();
+const GUION_ID = (() => { try{ return new URLSearchParams(location.search).get('guion') || ''; }catch(e){ return ''; } })();
 const portalUrl = tok => location.origin + location.pathname + '?cliente=' + encodeURIComponent(tok);
 const errMsg = c => ERR_TXT[c] || 'Algo salió mal. Intenta de nuevo.';
 
@@ -297,8 +350,8 @@ async function delRow(tbl,id){
 /* ====== Estado ====== */
 const S = {
   token: store.get('ikonico_token',''), me:null, view:'calendar', loading:true, needBoot:false,
-  team:[], clients:[], scripts:[], items:[],
-  scriptClient:'', clientId:'', openScript:null, prevView:'', cal:{y:new Date().getFullYear(), m:new Date().getMonth(), editor:''},
+  team:[], clients:[], scripts:[], items:[], events:[], week:[],
+  scriptClient:'', clientId:'', openScript:null, prevView:'', clientTab:'guiones', standalone:false, cal:{y:new Date().getFullYear(), m:new Date().getMonth(), editor:''},
   clientFilter:'activos', pin:'', loginErr:'', theme: store.get('ikonico_theme','dark'), zoom: +store.get('ikonico_zoom','100')
 };
 const isAdmin = () => S.me && S.me.role === 'Dirección';
@@ -313,8 +366,29 @@ function applyPrefs(){
 }
 
 async function loadAll(){
-  const [team, clients, scripts, items] = await Promise.all(['team_members','clients','scripts','calendar_items'].map(select));
+  const [team, clients, scripts, items, events] = await Promise.all(['team_members','clients','scripts','calendar_items','client_events'].map(select).concat(loadWeek()));
   S.team = team || []; S.clients = clients || []; S.scripts = scripts || []; S.items = items || [];
+  S.events = Array.isArray(events) ? events : [];
+}
+/* Meta semanal: videos agendados a cada editor esta semana (dom–sáb) contra los terminados */
+function weekRange(){
+  const t = new Date(), s = new Date(t.getFullYear(), t.getMonth(), t.getDate() - t.getDay()), e = new Date(s.getFullYear(), s.getMonth(), s.getDate() + 6);
+  return [ymd(s.getFullYear(), s.getMonth(), s.getDate()), ymd(e.getFullYear(), e.getMonth(), e.getDate())];
+}
+async function loadWeek(){
+  const [a, b] = weekRange();
+  try{ const r = await rpc('crm_week_stats', {p_token:T(), p_from:a, p_to:b}); S.week = Array.isArray(r) ? r : []; }
+  catch(e){ S.week = []; }
+}
+function weekGoals(){
+  const [a, b] = weekRange();
+  const rows = S.week.map(g => {
+    const pct = g.total ? Math.round(g.done / g.total * 100) : 0;
+    return `<div class="goal ${S.me && g.editor_id === S.me.id ? 'me' : ''}"><div class="gn"><b>${esc(g.name)}</b><span>${g.done}/${g.total}${g.done >= g.total ? ' 🎉' : ''}</span></div>
+      <div class="gb"><i style="width:${pct}%;background:${esc(g.color || '#ff4b00')}"></i></div></div>`;
+  }).join('');
+  return `<div class="goals"><div class="gh">Objetivo de la semana · ${fmtDay(a)} – ${fmtDay(b)} · videos de edición por editor</div>
+    ${rows ? `<div class="gl">${rows}</div>` : `<span class="hint">Todavía no hay videos agendados esta semana.</span>`}</div>`;
 }
 
 /* ====== Sesión ====== */
@@ -322,7 +396,7 @@ async function boot(){
   applyPrefs();
   if(PORTAL_KEY) return loadPortal();
   if(S.token){
-    try{ S.me = await rpc('crm_me', {p_token:S.token}); await loadAll(); S.loading = false; defaultView(); render(); return; }
+    try{ S.me = await rpc('crm_me', {p_token:S.token}); await loadAll(); S.loading = false; defaultView(); guionRoute(); return; }
     catch(e){ S.token = ''; store.del('ikonico_token'); }
   }
   try{ S.needBoot = await rpc('crm_bootstrap_needed'); }catch(e){ S.needBoot = false; S.loginErr = 'No pude conectar con la base de datos.'; }
@@ -337,7 +411,13 @@ async function afterAuth(res){
   S.token = res.token; S.me = res.member; store.set('ikonico_token', S.token);
   S.loginErr = ''; S.pin = ''; S.loading = true; render();
   try{ await loadAll(); }catch(e){ toast(e.message); }
-  S.loading = false; defaultView(); render();
+  S.loading = false; defaultView(); guionRoute();
+}
+/* ?guion=<id>: pestaña aparte con la página del cliente y ese guion abierto (el calendario sigue en la otra pestaña) */
+function guionRoute(){
+  const s = GUION_ID && S.scripts.find(x => x.id === GUION_ID);
+  if(!s){ render(); return; }
+  S.standalone = true; openClient(s.client_id, s.id);
 }
 function doLogout(silent){
   if(S.token && !silent){ rpc('crm_logout', {p_token:S.token}).catch(()=>{}); }
@@ -501,7 +581,7 @@ function clientsView(){
     return `<div class="card open ${c.status==='Inactivo'?'inactive':''}" data-act="client-open" data-id="${c.id}" title="Abrir la página de ${esc(c.name)}">
       <div class="top"><div class="emoji">${esc(c.emoji||'🎬')}</div><h3>${esc(c.name)}</h3></div>
       <div class="meta">
-        <div><span class="badge ${c.status==='Inactivo'?'off':'ok'}">${esc(c.status)}</span> <span class="badge">${c.client_type==='recurrente' ? 'Recurrente' + (c.videos_per_month ? ' · ' + c.videos_per_month + ' videos/mes' : '') : 'Por proyecto'}</span></div>
+        <div><span class="badge ${c.status==='Inactivo'?'off':'ok'}">${esc(c.status)}</span> <span class="badge">${typeLabel(c)}</span></div>
         <div>Editor: ${ed || 'sin asignar'}</div>
         ${member(c.cm_id) ? `<div>CM: ${esc(member(c.cm_id).name)}</div>` : ''}
         <div>${nScripts} guion${nScripts===1?'':'es'}</div>
@@ -512,6 +592,8 @@ function clientsView(){
     ${isAdmin() ? `<button class="btn" data-act="client-new">+ Nuevo cliente</button>` : ''}</div>
     ${list.length ? `<div class="grid">${cards}</div>` : `<div class="empty"><h3>Aún no hay clientes</h3>Da de alta al primero con “Nuevo cliente”.</div>`}`;
 }
+const typeLabel = c => c.client_type === 'recurrente' ? 'Recurrente' + (c.videos_per_month ? ' · ' + c.videos_per_month + ' videos/mes' : '')
+  : c.client_type === 'eventos' ? 'Eventos' : 'Por proyecto';
 const stSlug = st => st === 'Listo' ? 'listo' : st === 'En edición' ? 'edicion' : 'pend';
 function clientPage(){
   const c = client(S.clientId);
@@ -537,29 +619,86 @@ function clientPage(){
   }).join('');
   const pUrl = c.portal_token ? portalUrl(c.portal_token) : '';
   const linkBox = canManage() ? `<div class="cbox"><h4>Link para el cliente</h4>
-    <p>El cliente puede ver, crear y editar sus guiones desde aquí y abrir su carpeta de Frame. No puede cambiar el estado ni borrar.</p>
+    <p>${c.client_type === 'eventos' ? 'La clienta ve el calendario de sus eventos y abre directo los videos y las fotos de cada uno. No puede cambiar nada de los eventos.'
+      : 'El cliente puede ver, crear y editar sus guiones desde aquí y abrir su carpeta de Frame. No puede cambiar el estado ni borrar.'}</p>
     ${pUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(pUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(pUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(pUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Ver como cliente</a><button class="btn sec small" data-act="portal-gen" data-id="${c.id}" data-regen="1" title="El link anterior dejará de funcionar">↻ Link nuevo</button></div>`
       : `<div class="linkrow"><button class="btn small" data-act="portal-gen" data-id="${c.id}">🔗 Generar link para el cliente</button></div>`}</div>` : '';
   const clientBox = canManage() ? `<div class="cbox"><h4>Carpeta de Frame para el cliente</h4>
     <p>Es distinta a la de los editores. Es la que verá el cliente en su portal.</p>
     ${clUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(clUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(clUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(clUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Abrir</a></div>`
       : `<div class="linkrow"><span class="hint">Aún no está capturada.${isAdmin() ? ' Agrégala con “Editar”.' : ''}</span></div>`}</div>` : '';
+  const hasEv = c.client_type === 'eventos' && canManage(), tab = hasEv ? S.clientTab : 'guiones';
+  const nEv = S.events.filter(e => e.client_id === c.id).length;
+  const cpTabs = `<div class="cp-tabs">${hasEv ? `<div class="${tab==='eventos'?'on':''}" data-act="cp-tab" data-v="eventos" style="cursor:pointer">📅 Eventos (${nEv})</div>` : ''}<div class="${tab==='guiones'?'on':''}" ${hasEv ? 'data-act="cp-tab" data-v="guiones" style="cursor:pointer"' : ''}>📄 Guiones</div></div>`;
   return `<div class="cp-head">
-      <button class="ghost" data-act="client-back">‹ Volver</button>
+      ${S.standalone ? `<button class="ghost" data-act="close-tab">✕ Cerrar pestaña</button>` : `<button class="ghost" data-act="client-back">‹ Volver</button>`}
       <span class="em">${esc(c.emoji||'🎬')}</span><h2>${esc(c.name)}</h2>${chips}
       <div class="spacer"></div>
       ${edUrl ? `<a class="btn small" href="${esc(edUrl)}" target="_blank" rel="noopener" style="text-decoration:none">📁 Carpeta ${linkLabel(edUrl)}</a>` : ''}
       ${isAdmin() ? `<button class="btn sec small" data-act="client-edit" data-id="${c.id}">✎ Editar</button>` : ''}
     </div>
-    <div class="cp-tabs"><div class="on">Guiones</div></div>
-    ${linkBox}${clientBox}
+    ${cpTabs}
+    ${linkBox}${tab === 'eventos' ? eventsPanel(c) : `${clientBox}
     <div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'}</span><div class="spacer"></div>
       ${canManage() ? `<button class="btn" data-act="script-new">+ Nuevo guion</button>` : ''}</div>
-    ${list.length ? items : `<div class="empty"><h3>Sin guiones todavía</h3>${canManage() ? 'Crea el primero: número de video y qué quieres exactamente en él, para que el editor lo entienda.' : 'Aquí verás las indicaciones de cada video.'}</div>`}`;
+    ${list.length ? items : `<div class="empty"><h3>Sin guiones todavía</h3>${canManage() ? 'Crea el primero: número de video y qué quieres exactamente en él, para que el editor lo entienda.' : 'Aquí verás las indicaciones de cada video.'}</div>`}`}`;
+}
+/* ---- Eventos (clientes de graduaciones): fecha, lugar, evento, estado y links de videos y fotos ---- */
+const EV_ST = ['Pendiente','Entregado'];
+const evChip = s => `<span class="st ${s==='Entregado'?'listo':''}">${esc(s)}</span>`;
+const evLink = (u, txt) => { const x = safeUrl(u); return x ? `<a class="btn sec small" href="${esc(x)}" target="_blank" rel="noopener" style="text-decoration:none">${txt}</a>` : '<span class="hint">—</span>'; };
+function eventsPanel(c){
+  const list = S.events.filter(e => e.client_id === c.id).sort((a,b) => a.event_date.localeCompare(b.event_date));
+  let html = '', month = '';
+  list.forEach(ev => {
+    const mk = ev.event_date.slice(0,7);
+    if(mk !== month){
+      if(month) html += '</tbody></table></div>';
+      month = mk;
+      html += `<div class="table-wrap evt"><table><thead><tr class="mh"><th colspan="8">${MONTHS[+mk.slice(5,7)-1]} ${mk.slice(0,4)}</th></tr>
+        <tr><th>Fecha</th><th>Lugar</th><th>Evento</th><th>Reel</th><th>Fotos</th><th>Videos</th><th>Fotos</th><th></th></tr></thead><tbody>`;
+    }
+    html += `<tr><td style="white-space:nowrap">${fmtDay(ev.event_date)}</td><td>${esc(ev.place||'—')}</td><td><b>${esc(ev.title)}</b></td>
+      <td>${evChip(ev.reel_status)}</td><td>${evChip(ev.photos_status)}</td><td>${evLink(ev.video_link, '🎬 Videos')}</td><td>${evLink(ev.photos_link, '📷 Fotos')}</td>
+      <td style="white-space:nowrap"><button class="btn sec small" data-act="ev-edit" data-id="${ev.id}">Editar</button></td></tr>`;
+  });
+  if(month) html += '</tbody></table></div>';
+  return `<div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} evento${list.length===1?'':'s'} · la clienta los ve en el calendario de su portal</span><div class="spacer"></div>
+      <button class="btn" data-act="ev-new">+ Agregar evento</button></div>
+    ${list.length ? html : `<div class="empty"><h3>Sin eventos todavía</h3>Agrega cada graduación con su fecha y los links de videos y fotos.</div>`}`;
+}
+function eventForm(ev){
+  ev = ev || {}; const editing = !!ev.id;
+  const stOpts = sel => EV_ST.map(s => `<option ${(sel||'Pendiente')===s?'selected':''}>${s}</option>`).join('');
+  const body = `<div class="row2"><div class="f"><label>Fecha</label><input type="date" name="event_date" required value="${esc(ev.event_date||todayStr())}"></div>
+  <div class="f"><label>Lugar</label><input type="text" name="place" value="${esc(ev.place||'')}" placeholder="Ej. Valentina y Piedra"></div></div>
+  <div class="f"><label>Evento</label><input type="text" name="title" required value="${esc(ev.title||'')}" placeholder="Ej. UAQ - Arquitectura"></div>
+  <div class="row2"><div class="f"><label>Reel</label><select name="reel_status">${stOpts(ev.reel_status)}</select></div>
+  <div class="f"><label>Fotos</label><select name="photos_status">${stOpts(ev.photos_status)}</select></div></div>
+  <div class="f"><label>Link de videos (Drive o Frame)</label><input type="text" name="video_link" value="${esc(ev.video_link||'')}" placeholder="https://drive.google.com/…"></div>
+  <div class="f"><label>Link de fotos (Pic-Time)</label><input type="text" name="photos_link" value="${esc(ev.photos_link||'')}" placeholder="https://ikonicostudio.pic-time.com/…">
+    <div class="hint">Puedes dejar un link vacío y agregarlo cuando esté listo. La clienta ve el evento en su calendario y abre cada carpeta directo.</div></div>`;
+  openModal(editing ? 'Editar evento' : 'Nuevo evento', body, async fd => {
+    const vl = (fd.get('video_link')||'').trim(), pl = (fd.get('photos_link')||'').trim();
+    if((vl && !safeUrl(vl)) || (pl && !safeUrl(pl))) throw new Error('Los links deben empezar con https://');
+    const row = {client_id:ev.client_id || S.clientId, event_date:fd.get('event_date'), place:(fd.get('place')||'').trim() || null,
+      title:fd.get('title').trim(), reel_status:fd.get('reel_status'), photos_status:fd.get('photos_status'), video_link:vl || null, photos_link:pl || null};
+    if(ev.id) row.id = ev.id;
+    const r = await saveRow('client_events', row);
+    if(r && r.error) throw new Error(errMsg(r.error));
+    await refresh(); toast('Evento guardado');
+  }, null, editing ? async () => {
+    if(!confirm(`¿Eliminar el evento ${ev.title}?`)) return false;
+    const r = await delRow('client_events', ev.id);
+    if(r && r.error) throw new Error(errMsg(r.error));
+    await refresh(); toast('Evento eliminado'); return true;
+  } : null);
 }
 function fmtDay(s){ if(!s) return ''; const [y,m,d] = s.split('-').map(Number); return `${d} ${MON_SHORT[m-1]}`; }
 function openClient(id, scriptId){
   if(S.view !== 'client') S.prevView = S.view;
+  const c = client(id);
+  S.clientTab = c && c.client_type === 'eventos' && !scriptId ? 'eventos' : 'guiones';
   S.clientId = id; S.scriptClient = id; S.openScript = scriptId || null; S.view = 'client'; render();
   const el = scriptId && document.getElementById('sc-' + scriptId);
   if(el) el.scrollIntoView({block:'center'}); else window.scrollTo(0, 0);
@@ -579,7 +718,8 @@ function clientForm(c){
     <div class="hint">Se abre desde el calendario y desde la página del cliente.</div></div>
   <div class="f"><label>Link de Frame para el cliente (lo verá en su portal)</label><input type="text" name="client_folder_link" value="${esc(c.client_folder_link||'')}" placeholder="https://… (carpeta compartida con el cliente)">
     <div class="hint">Es distinto al de los editores. Este link aparecerá en el portal del cliente para que vea sus videos.</div></div>
-  <div class="row2"><div class="f"><label>Tipo de cliente</label><select name="client_type" id="ct"><option value="recurrente" ${c.client_type!=='proyecto'?'selected':''}>Recurrente (iguala mensual)</option><option value="proyecto" ${c.client_type==='proyecto'?'selected':''}>Por proyecto / evento (ej. graduaciones)</option></select></div>
+  <div class="row2"><div class="f"><label>Tipo de cliente</label><select name="client_type" id="ct"><option value="recurrente" ${c.client_type!=='proyecto'?'selected':''}>Recurrente (iguala mensual)</option><option value="proyecto" ${c.client_type==='proyecto'?'selected':''}>Por proyecto</option><option value="eventos" ${c.client_type==='eventos'?'selected':''}>Eventos (graduaciones)</option></select>
+    <div class="hint">Los clientes de Eventos tienen calendario de eventos con links de videos y fotos.</div></div>
   <div class="f" id="vpm"><label>Videos al mes</label><input type="number" name="videos_per_month" min="0" max="99" value="${esc(c.videos_per_month ?? 4)}"></div></div>
   <div class="row2"><div class="f"><label>Editor asignado</label><select name="editor_id">${memberOptions(c.editor_id)}</select></div>
   <div class="f"><label>Editor 2 (opcional)</label><select name="editor2_id">${memberOptions(c.editor2_id)}</select></div></div>
@@ -660,6 +800,7 @@ async function toggleDone(id){
     const r = await rpc('crm_set_done', {p_token:T(), p_id:id, p_done:!it.done});
     if(r && r.error){ toast(errMsg(r.error)); return; }
     Object.assign(it, r); render(); toast(it.done ? 'Marcado como listo' : 'Reabierto');
+    await loadWeek(); render();
   }catch(e){ toast(e.message); }
 }
 /* Estirar una tarjeta: se arrastra el asa del último día hasta el día final */
@@ -691,6 +832,7 @@ function startResize(id, e){
       const r = await saveRow('calendar_items', row);
       if(r && r.error) throw new Error(errMsg(r.error));
       const n = dayDiff(start, end) + 1; toast(n === 1 ? 'Ahora dura 1 día' : `Ahora dura ${n} días`);
+      await loadWeek(); render();
     }catch(err){ it.end_date = prev; render(); toast(err.message); }
   };
   document.body.classList.add('resizing'); paint();
@@ -700,34 +842,58 @@ document.addEventListener('pointerdown', e => {
   const h = e.target.closest('[data-rz]'); if(!h || !canManage()) return;
   e.preventDefault(); e.stopPropagation(); startResize(h.dataset.rz, e);
 });
-function itemsOn(day){
-  return S.items.filter(i => i.start_date <= day && day <= (i.end_date || i.start_date) && (!S.cal.editor || i.editor_id === S.cal.editor));
-}
 function calendarView(){
   const {y,m} = S.cal; const first = new Date(y,m,1).getDay(); const days = new Date(y,m+1,0).getDate();
   const prevDays = new Date(y,m,0).getDate(); const tStr = todayStr();
-  let cells = DOW.map(d => `<div class="dow">${d}</div>`).join('');
   const total = Math.ceil((first + days) / 7) * 7;
-  for(let i = 0; i < total; i++){
+  const dayAt = i => {
     let dy = y, dm = m, dd = i - first + 1, out = false;
     if(dd < 1){ dm = m-1; dd = prevDays + dd; out = true; if(dm < 0){ dm = 11; dy = y-1; } }
     else if(dd > days){ dd = dd - days; dm = m+1; out = true; if(dm > 11){ dm = 0; dy = y+1; } }
-    const ds = ymd(dy,dm,dd);
-    const pills = itemsOn(ds).map(it => {
-      const c = client(it.client_id), e = member(it.editor_id), col = (e && e.color) || '#aebcf0';
-      const canDone = canManage() || (S.me && it.editor_id === S.me.id), sc = scriptFor(it);
-      const label = (it.video_number ? it.video_number + ' — ' : '') + (c ? c.name : 'Sin cliente');
-      const end = it.end_date || it.start_date, span = dayDiff(it.start_date, end) + 1, nDay = dayDiff(it.start_date, ds) + 1;
-      const dayTag = span > 1 ? `<span class="day">día ${nDay}/${span}</span>` : '';
-      const handle = canManage() && ds === end ? `<span class="rz" data-rz="${it.id}" title="Arrastra para que dure más días (hasta ${MAX_SPAN_DAYS})"></span>` : '';
-      return `<div class="pill ${it.done?'done':''} ${nDay > 1 ? 'cont' : ''}" data-act="cal-item" data-id="${it.id}" style="--ed:${esc(col)}" title="${esc(label+(it.title?' · '+it.title:''))}">
-        <div class="t">${esc(c&&c.emoji?c.emoji+' ':'')}${esc(label)}</div>
-        <div class="who"><i class="dot"></i>${esc(e ? e.name : 'Sin responsable')}</div>
-        <div class="ft"><span class="pg">${it.done?'✓ Listo':it.progress+'%'}</span>${dayTag}
-          ${sc ? `<button type="button" class="gs" data-act="cal-script" data-id="${sc.id}" title="Ver guion">📄 Guion</button>` : ''}</div>
-        ${canDone ? `<button type="button" class="chk" data-act="cal-done" data-id="${it.id}" title="${it.done?'Reabrir':'Marcar como listo'}">${it.done?'✓':''}</button>` : ''}${handle}</div>`;
+    return {dd, out, ds:ymd(dy,dm,dd)};
+  };
+  const info = it => {
+    const c = client(it.client_id), e = member(it.editor_id);
+    return {c, e, col:(e && e.color) || '#aebcf0', sc:scriptFor(it),
+      canDone: canManage() || (S.me && it.editor_id === S.me.id),
+      label:(it.video_number ? it.video_number + ' — ' : '') + (c ? c.name : 'Sin cliente')};
+  };
+  const chk = (it, ok) => ok ? `<button type="button" class="chk" data-act="cal-done" data-id="${it.id}" title="${it.done?'Reabrir':'Marcar como listo'}">${it.done?'✓':''}</button>` : '';
+  const gs = sc => sc ? `<button type="button" class="gs" data-act="cal-script" data-id="${sc.id}" title="Abrir el guion en otra pestaña">📄 Guion</button>` : '';
+  const rz = it => canManage() ? `<span class="rz" data-rz="${it.id}" title="Arrastra para que dure más días (hasta ${MAX_SPAN_DAYS})"></span>` : '';
+  const pill = it => {
+    const {c, e, col, sc, canDone, label} = info(it);
+    return `<div class="pill ${it.done?'done':''}" data-act="cal-item" data-id="${it.id}" style="--ed:${esc(col)}" title="${esc(label+(it.title?' · '+it.title:''))}">
+      <div class="t">${esc(c&&c.emoji?c.emoji+' ':'')}${esc(label)}</div>
+      <div class="who"><i class="dot"></i>${esc(e ? e.name : 'Sin responsable')}</div>
+      <div class="ft"><span class="pg">${it.done?'✓ Listo':it.progress+'%'}</span>${gs(sc)}</div>${chk(it, canDone)}${rz(it)}</div>`;
+  };
+  const isMulti = it => it.end_date && it.end_date !== it.start_date;
+  const byEditor = it => !S.cal.editor || it.editor_id === S.cal.editor;
+  let weeks = '';
+  for(let w = 0; w < total / 7; w++){
+    const wd = [0,1,2,3,4,5,6].map(k => dayAt(w * 7 + k)), ws = wd[0].ds, we = wd[6].ds;
+    // Videos de varios días: una barra por video, acomodadas en carriles para que no se encimen
+    const multi = S.items.filter(it => isMulti(it) && byEditor(it) && it.start_date <= we && it.end_date >= ws)
+      .sort((a,b) => a.start_date.localeCompare(b.start_date) || b.end_date.localeCompare(a.end_date));
+    const laneEnd = [], bars = [];
+    multi.forEach(it => {
+      const a = it.start_date < ws ? ws : it.start_date, b = it.end_date > we ? we : it.end_date;
+      const c1 = dayDiff(ws, a), c2 = dayDiff(ws, b);
+      let lane = laneEnd.findIndex(x => x < c1); if(lane < 0){ lane = laneEnd.length; laneEnd.push(-1); }
+      laneEnd[lane] = c2;
+      const {c, e, col, sc, canDone, label} = info(it), from = it.start_date < ws, to = it.end_date > we;
+      bars.push(`<div class="mbar ${it.done?'done':''} ${from?'from':''} ${to?'to':''}" data-act="cal-item" data-id="${it.id}" style="--ed:${esc(col)};grid-column:${c1+1} / ${c2+2};grid-row:${lane+2}" title="${esc(label+(it.title?' · '+it.title:'')+' · '+fmtDay(it.start_date)+' – '+fmtDay(it.end_date))}">
+        ${from ? '<span class="ar">←</span>' : ''}<b class="bt">${esc(c&&c.emoji?c.emoji+' ':'')}${esc(label)}</b>${gs(sc)}
+        <span class="who"><i class="dot"></i>${esc(e ? e.name : 'Sin responsable')}</span><span class="spacer"></span>
+        <span class="pg">${it.done?'✓ Listo':it.progress+'%'}</span>${chk(it, canDone)}${to ? '<span class="ar">→</span>' : rz(it)}</div>`);
+    });
+    const L = laneEnd.length;
+    const cells = wd.map((d, k) => {
+      const pills = S.items.filter(it => !isMulti(it) && byEditor(it) && it.start_date === d.ds).map(pill).join('');
+      return `<div class="cell ${d.out?'out':''} ${d.ds===tStr?'today':''} ${k===6?'c7':''}" data-act="cal-day" data-d="${d.ds}" style="grid-column:${k+1};padding-top:${34 + L*34}px"><div class="num">${d.dd}</div>${pills}</div>`;
     }).join('');
-    cells += `<div class="cell ${out?'out':''} ${ds===tStr?'today':''}" data-act="cal-day" data-d="${ds}"><div class="num">${dd}</div>${pills}</div>`;
+    weeks += `<div class="wk" style="grid-template-rows:32px repeat(${L},34px) 1fr">${cells}${bars.join('')}</div>`;
   }
   const yrs = []; for(let k = new Date().getFullYear()-2; k <= new Date().getFullYear()+8; k++) yrs.push(k);
   if(!yrs.includes(y)) yrs.push(y);
@@ -740,7 +906,7 @@ function calendarView(){
       <select data-change="cal-year">${yrs.sort().map(k => `<option ${k===y?'selected':''}>${k}</option>`).join('')}</select>
       <button class="ghost" data-act="cal-today">Hoy</button>
       ${canManage() ? `<select data-change="cal-editor" style="margin-left:auto"><option value="">Todos los editores</option>${S.team.filter(t => t.role !== 'Dirección').map(t => `<option value="${t.id}" ${S.cal.editor===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select>` : ''}
-    </div><div class="cal">${cells}</div>`;
+    </div>${weekGoals()}<div class="cal"><div class="dows">${DOW.map(d => `<div class="dow">${d}</div>`).join('')}</div>${weeks}</div>`;
 }
 function itemForm(it, presetDate, preset){
   it = it || {}; preset = preset || {}; const editing = !!it.id; const ro = !canManage();
@@ -793,11 +959,20 @@ function itemForm(it, presetDate, preset){
 }
 
 /* ---- Portal del cliente (link público, sin PIN) ---- */
-const P = {client:null, scripts:[], tab:'guiones', open:null, err:''};
+const P = {client:null, scripts:[], events:[], tab:'guiones', open:null, err:'', cal:{y:new Date().getFullYear(), m:new Date().getMonth()}};
 async function loadPortal(){
   try{
     const r = await rpc('portal_get', {p_key:PORTAL_KEY});
-    if(r && r.error) P.err = errMsg(r.error); else { P.client = r.client; P.scripts = r.scripts || []; }
+    if(r && r.error) P.err = errMsg(r.error);
+    else {
+      P.client = r.client; P.scripts = r.scripts || []; P.events = r.events || [];
+      if(P.client.client_type === 'eventos'){
+        P.tab = 'calendario';
+        // Abre en el mes del evento más reciente que ya pasó (o el de hoy si no hay)
+        const t = todayStr(), past = P.events.filter(e => e.event_date <= t).pop() || P.events[0];
+        if(past && !P.events.some(e => e.event_date.slice(0,7) === t.slice(0,7))){ P.cal = {y:+past.event_date.slice(0,4), m:+past.event_date.slice(5,7) - 1}; }
+      }
+    }
   }catch(e){ P.err = e.message; }
   if(P.client) document.title = P.client.name + ' · Ikonico Studio';
   S.loading = false; render();
@@ -820,16 +995,45 @@ function portalView(){
         <div class="sc-a"><button class="btn sec small" data-act="pt-edit" data-id="${s.id}">✎ Editar guion</button></div></div>` : ''}
     </div>`;
   }).join('');
-  const body = P.tab === 'videos'
+  const isEv = c.client_type === 'eventos';
+  const ptabs = isEv ? [['calendario','📅 Calendario']].concat(list.length ? [['guiones','📄 Guiones']] : [], url ? [['videos','🎬 Carpeta general']] : [])
+    : [['guiones','📄 Guiones'], ['videos','🎬 Tus videos']];
+  if(!ptabs.find(t => t[0] === P.tab)) P.tab = ptabs[0][0];
+  const body = P.tab === 'calendario' ? portalCalendar() : P.tab === 'videos'
     ? `<div class="cbox vbox">${url ? `<p>Aquí están tus videos, listos para revisar y descargar.</p><a class="btn" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">🎬 Abrir mi carpeta en ${linkLabel(url)}</a>` : `<p>Tu carpeta de videos todavía no está lista. En cuanto la tengamos, aparecerá aquí.</p>`}</div>`
     : `<div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'} · Ikonico Studio actualiza el estado de cada uno</span><div class="spacer"></div>
         <button class="btn" data-act="pt-new">+ Nuevo guion</button></div>
       ${list.length ? items : `<div class="empty"><h3>Aún no hay guiones</h3>Escribe el primero con “Nuevo guion”: el número de video y lo que quieres decir en él.</div>`}`;
   return `<div class="portal">${top}
     <div class="hero"><div class="kick">Ikonico Studio</div><div class="em">${esc(c.emoji || '🎬')}</div><h1>Hola, ${esc(c.name)}</h1>
-      <p>Gracias por tu confianza. Este es tu espacio: aquí puedes ver y editar tus guiones y abrir la carpeta con tus videos.</p></div>
-    <div class="cp-tabs"><div class="${P.tab==='guiones'?'on':''}" data-act="pt-tab" data-v="guiones">📄 Guiones</div><div class="${P.tab==='videos'?'on':''}" data-act="pt-tab" data-v="videos">🎬 Tus videos</div></div>
+      <p>${isEv ? 'Gracias por tu confianza. Aquí está el calendario de tus eventos: dale clic a cada uno para abrir directo sus videos y sus fotos.'
+        : 'Gracias por tu confianza. Este es tu espacio: aquí puedes ver y editar tus guiones y abrir la carpeta con tus videos.'}</p></div>
+    <div class="cp-tabs">${ptabs.map(([k,l]) => `<div class="${P.tab===k?'on':''}" data-act="pt-tab" data-v="${k}">${l}</div>`).join('')}</div>
     ${body}</div>`;
+}
+function evButtons(ev){
+  const v = safeUrl(ev.video_link), f = safeUrl(ev.photos_link);
+  return (v ? `<a href="${esc(v)}" target="_blank" rel="noopener">🎬 Videos</a>` : `<span>🎬 ${ev.reel_status === 'Entregado' ? 'Sin link' : 'En proceso'}</span>`) +
+    (f ? `<a href="${esc(f)}" target="_blank" rel="noopener">📷 Fotos</a>` : `<span>📷 ${ev.photos_status === 'Entregado' ? 'Sin link' : 'En proceso'}</span>`);
+}
+function portalCalendar(){
+  const {y, m} = P.cal, first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), tStr = todayStr();
+  const total = Math.ceil((first + days) / 7) * 7, mk = `${y}-${pad2(m + 1)}`;
+  let cells = '';
+  for(let i = 0; i < total; i++){
+    const dd = i - first + 1, inMonth = dd >= 1 && dd <= days, ds = inMonth ? `${mk}-${pad2(dd)}` : '';
+    const evs = inMonth ? P.events.filter(e => e.event_date === ds) : [];
+    cells += `<div class="cell ${inMonth ? '' : 'out'} ${ds === tStr ? 'today' : ''} ${i % 7 === 6 ? 'c7' : ''}" style="grid-row:auto">${inMonth ? `<div class="num">${dd}</div>` : ''}
+      ${evs.map(e => `<div class="ev" title="${esc(e.title + (e.place ? ' · ' + e.place : ''))}"><b>🎓 ${esc(e.title)}</b>${e.place ? `<span class="pl">${esc(e.place)}</span>` : ''}<div class="evl">${evButtons(e)}</div></div>`).join('')}</div>`;
+  }
+  const monthEvents = P.events.filter(e => e.event_date.slice(0,7) === mk);
+  const rows = monthEvents.map(e => `<div class="evrow"><div class="d">${+e.event_date.slice(8,10)}</div>
+    <div class="tx"><b>🎓 ${esc(e.title)}</b><small>${esc(e.place || '')}${e.place ? ' · ' : ''}${fmtDay(e.event_date)}</small></div>
+    <div class="bt ev" style="background:none;border:0;padding:0"><div class="evl" style="margin:0">${evButtons(e)}</div></div></div>`).join('');
+  return `<div class="pcal-head"><button class="ghost" data-act="pt-prev">‹</button><h3>${MONTHS[m]} ${y}</h3><button class="ghost" data-act="pt-next">›</button>
+      <span class="hint" style="margin:0 0 0 auto">${P.events.length} evento${P.events.length===1?'':'s'} en total</span></div>
+    <div class="cal pcal"><div class="dows">${DOW.map(d => `<div class="dow">${d}</div>`).join('')}</div><div class="wk">${cells}</div></div>
+    <div class="evlist">${rows || `<div class="empty"><h3>Sin eventos este mes</h3>Usa las flechas para ver otros meses.</div>`}</div>`;
 }
 function portalForm(s){
   s = s || {}; const editing = !!s.id;
@@ -888,7 +1092,7 @@ async function confirmDelete(tbl, id, label){
   }catch(e){ toast(e.message); }
 }
 const H = {
-  tab:(t) => { S.view = t.dataset.v; render(); },
+  tab:(t) => { S.view = t.dataset.v; S.standalone = false; render(); },
   theme:() => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; store.set('ikonico_theme', S.theme); applyPrefs(); render(); },
   zoom:(t) => { S.zoom = Math.min(130, Math.max(60, S.zoom + (+t.dataset.d))); store.set('ikonico_zoom', S.zoom); applyPrefs(); render(); },
   logout:() => doLogout(),
@@ -904,6 +1108,11 @@ const H = {
   'client-back':() => { S.view = S.prevView && S.prevView !== 'client' ? S.prevView : (canManage() ? 'clients' : 'calendar'); S.openScript = null; render(); window.scrollTo(0, 0); },
   'sc-toggle':(t) => { S.openScript = S.openScript === t.dataset.id ? null : t.dataset.id; render(); },
   copy:(t) => { const v = t.dataset.v; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast('Link copiado'), () => { prompt('Copia el link:', v); }); },
+  'cp-tab':(t) => { S.clientTab = t.dataset.v; render(); },
+  'ev-new':() => eventForm(),
+  'ev-edit':(t) => eventForm(S.events.find(x => x.id === t.dataset.id)),
+  'pt-prev':() => { P.cal.m--; if(P.cal.m < 0){ P.cal.m = 11; P.cal.y--; } render(); },
+  'pt-next':() => { P.cal.m++; if(P.cal.m > 11){ P.cal.m = 0; P.cal.y++; } render(); },
   'portal-gen':(t) => genPortalLink(t.dataset.id, !!t.dataset.regen),
   'pt-tab':(t) => { P.tab = t.dataset.v; render(); },
   'pt-toggle':(t) => { P.open = P.open === t.dataset.id ? null : t.dataset.id; render(); },
@@ -921,7 +1130,15 @@ const H = {
   'cal-day':(t, e) => { if(e.target.closest('.pill')) return; if(canManage()) itemForm(null, t.dataset.d); },
   'cal-item':(t) => itemForm(S.items.find(x => x.id === t.dataset.id)),
   'cal-done':(t) => toggleDone(t.dataset.id),
-  'cal-script':(t) => { const s = S.scripts.find(x => x.id === t.dataset.id); if(s) openClient(s.client_id, s.id); },
+  'cal-script':(t) => {
+    const s = S.scripts.find(x => x.id === t.dataset.id); if(!s) return;
+    const w = window.open(location.pathname + '?guion=' + encodeURIComponent(s.id), '_blank');
+    if(!w) openClient(s.client_id, s.id);
+  },
+  'close-tab':() => {
+    window.close();
+    S.standalone = false; history.replaceState(null, '', location.pathname); S.view = 'calendar'; render();
+  },
   overlay:(t, e) => { if(e.target === t) closeModal(); }
 };
 document.addEventListener('click', e => {
