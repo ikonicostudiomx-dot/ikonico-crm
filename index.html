@@ -189,6 +189,9 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .mbar.done .pg{background:rgba(95,207,151,.18);color:var(--ok)}
 .mbar.done .chk{background:var(--ok);border-color:var(--ok)}
 body.resizing .mbar,body.resizing .pill{pointer-events:none}
+.can-move .pill,.can-move .mbar{cursor:grab;user-select:none;-webkit-user-select:none}
+body.moving,body.moving *{cursor:grabbing!important;user-select:none}
+.ghost-it{opacity:.35}
 /* meta semanal */
 .goals{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
 .goals .gh{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
@@ -233,6 +236,8 @@ body.resizing,body.resizing *{cursor:ew-resize!important;user-select:none}
 .f{margin-bottom:14px}
 .f label{display:block;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f label.chkrow{display:flex;align-items:center;gap:10px;font-size:14px;letter-spacing:0;text-transform:none;color:var(--text);cursor:pointer}
+.chkrow input{width:18px;height:18px;accent-color:var(--accent)}
 .hint{font-size:12px;color:var(--muted);margin-top:5px}
 .mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
 .range{display:flex;align-items:center;gap:14px}
@@ -619,8 +624,9 @@ function clientPage(){
   }).join('');
   const pUrl = c.portal_token ? portalUrl(c.portal_token) : '';
   const linkBox = canManage() ? `<div class="cbox"><h4>Link para el cliente</h4>
-    <p>${c.client_type === 'eventos' ? 'La clienta ve el calendario de sus eventos y abre directo los videos y las fotos de cada uno. No puede cambiar nada de los eventos.'
-      : 'El cliente puede ver, crear y editar sus guiones desde aquí y abrir su carpeta de Frame. No puede cambiar el estado ni borrar.'}</p>
+    <p>${[c.client_type === 'eventos' ? 'Ve el calendario de sus eventos y abre directo los videos y las fotos de cada uno.' : '',
+      c.portal_scripts !== false ? 'Puede ver, crear y editar sus guiones (no cambia el estado ni borra).' : 'Los guiones están ocultos para el cliente (cámbialo en “Editar”).',
+      'También ve su carpeta de Frame.'].filter(Boolean).join(' ')}</p>
     ${pUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(pUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(pUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(pUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Ver como cliente</a><button class="btn sec small" data-act="portal-gen" data-id="${c.id}" data-regen="1" title="El link anterior dejará de funcionar">↻ Link nuevo</button></div>`
       : `<div class="linkrow"><button class="btn small" data-act="portal-gen" data-id="${c.id}">🔗 Generar link para el cliente</button></div>`}</div>` : '';
   const clientBox = canManage() ? `<div class="cbox"><h4>Carpeta de Frame para el cliente</h4>
@@ -724,6 +730,8 @@ function clientForm(c){
   <div class="row2"><div class="f"><label>Editor asignado</label><select name="editor_id">${memberOptions(c.editor_id)}</select></div>
   <div class="f"><label>Editor 2 (opcional)</label><select name="editor2_id">${memberOptions(c.editor2_id)}</select></div></div>
   <div class="f"><label>Community manager</label><select name="cm_id">${memberOptions(c.cm_id)}</select></div>
+  <div class="f"><label class="chkrow"><input type="checkbox" name="portal_scripts" id="ps" ${(editing ? c.portal_scripts !== false : c.client_type !== 'eventos') ? 'checked' : ''}> Mostrar los guiones en el portal del cliente</label>
+    <div class="hint">Si lo apagas, los guiones solo los ven ustedes y los editores; el cliente no los ve en su link.</div></div>
   <div class="f"><label>Notas</label><textarea name="notes" rows="3">${esc(c.notes||'')}</textarea></div>`;
   openModal(editing ? 'Editar cliente' : 'Nuevo cliente', body, async fd => {
     const link = (fd.get('folder_link')||'').trim(), clink = (fd.get('client_folder_link')||'').trim();
@@ -731,14 +739,15 @@ function clientForm(c){
     const row = {name:fd.get('name').trim(), emoji:fd.get('emoji')||null, status:fd.get('status'), email:fd.get('email')||null,
       folder_link:link||null, client_folder_link:clink||null, client_type:fd.get('client_type'),
       videos_per_month: fd.get('client_type')==='recurrente' && fd.get('videos_per_month') !== '' ? +fd.get('videos_per_month') : null,
-      editor_id:fd.get('editor_id')||null, editor2_id:fd.get('editor2_id')||null, cm_id:fd.get('cm_id')||null, notes:fd.get('notes')||null};
+      editor_id:fd.get('editor_id')||null, editor2_id:fd.get('editor2_id')||null, cm_id:fd.get('cm_id')||null, notes:fd.get('notes')||null,
+      portal_scripts: fd.get('portal_scripts') === 'on'};
     if(fd.get('id')) row.id = fd.get('id');
     const r = await saveRow('clients', row);
     if(r && r.error) throw new Error(errMsg(r.error));
     await refresh(); toast('Cliente guardado');
   }, () => {
-    const ct = $('#ct'), v = $('#vpm'); const sync = () => v.style.display = ct.value === 'recurrente' ? '' : 'none';
-    ct.addEventListener('change', sync); sync();
+    const ct = $('#ct'), v = $('#vpm'), ps = $('#ps'); const sync = () => v.style.display = ct.value === 'recurrente' ? '' : 'none';
+    ct.addEventListener('change', () => { sync(); if(!editing) ps.checked = ct.value !== 'eventos'; }); sync();
   }, editing && isAdmin() ? async () => {
     if(!confirm(`¿Eliminar al cliente ${c.name}? También se borran sus guiones y sus videos del calendario. No se puede deshacer.`)) return false;
     const r = await delRow('clients', c.id);
@@ -842,6 +851,53 @@ document.addEventListener('pointerdown', e => {
   const h = e.target.closest('[data-rz]'); if(!h || !canManage()) return;
   e.preventDefault(); e.stopPropagation(); startResize(h.dataset.rz, e);
 });
+/* Mover una tarjeta a otro día arrastrándola (conserva cuántos días dura) */
+const cellAt = (x, y) => document.elementsFromPoint(x, y).find(n => n.matches && n.matches('.cell[data-d]'));
+let drag = null;
+function paintMove(){
+  const it = S.items.find(x => x.id === drag.id); if(!it) return;
+  const delta = dayDiff(drag.from, drag.to), a = addDays(it.start_date, delta), b = addDays(it.end_date || it.start_date, delta);
+  document.querySelectorAll('.cell[data-d]').forEach(c => c.classList.toggle('span-on', c.dataset.d >= a && c.dataset.d <= b));
+}
+document.addEventListener('pointerdown', e => {
+  if(e.button !== 0 || !canManage() || S.view !== 'calendar' || e.target.closest('[data-rz],button,a')) return;
+  const el = e.target.closest('.pill[data-id],.mbar[data-id]'), cell = el && cellAt(e.clientX, e.clientY);
+  if(!cell) return;
+  drag = {id:el.dataset.id, x:e.clientX, y:e.clientY, from:cell.dataset.d, to:cell.dataset.d, on:false};
+});
+window.addEventListener('pointermove', e => {
+  if(!drag) return;
+  if(!drag.on){
+    if(Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    drag.on = true; document.body.classList.add('moving');
+    document.querySelectorAll(`[data-id="${CSS.escape(drag.id)}"].pill,[data-id="${CSS.escape(drag.id)}"].mbar`).forEach(n => n.classList.add('ghost-it'));
+  }
+  const cell = cellAt(e.clientX, e.clientY); if(cell) drag.to = cell.dataset.d;
+  paintMove();
+});
+const endMove = async e => {
+  if(!drag) return;
+  const d = drag; drag = null;
+  if(!d.on) return;
+  document.body.classList.remove('moving');
+  document.querySelectorAll('.span-on,.ghost-it').forEach(n => n.classList.remove('span-on', 'ghost-it'));
+  skipClick = true; setTimeout(() => { skipClick = false; }, 60);
+  const it = S.items.find(x => x.id === d.id), delta = dayDiff(d.from, d.to);
+  if(!it || e.type === 'pointercancel' || !delta) return;
+  const prev = {start_date:it.start_date, end_date:it.end_date};
+  it.start_date = addDays(it.start_date, delta); if(it.end_date) it.end_date = addDays(it.end_date, delta);
+  render();
+  try{
+    const row = {id:it.id, client_id:it.client_id, video_number:it.video_number, title:it.title, start_date:it.start_date, end_date:it.end_date,
+      editor_id:it.editor_id, progress:it.progress, done:it.done, notes:it.notes};
+    const r = await saveRow('calendar_items', row);
+    if(r && r.error) throw new Error(errMsg(r.error));
+    toast(`Movido al ${fmtDay(it.start_date)}`);
+    await loadWeek(); render();
+  }catch(err){ Object.assign(it, prev); render(); toast(err.message); }
+};
+window.addEventListener('pointerup', endMove);
+window.addEventListener('pointercancel', endMove);
 function calendarView(){
   const {y,m} = S.cal; const first = new Date(y,m,1).getDay(); const days = new Date(y,m+1,0).getDate();
   const prevDays = new Date(y,m,0).getDate(); const tStr = todayStr();
@@ -906,7 +962,7 @@ function calendarView(){
       <select data-change="cal-year">${yrs.sort().map(k => `<option ${k===y?'selected':''}>${k}</option>`).join('')}</select>
       <button class="ghost" data-act="cal-today">Hoy</button>
       ${canManage() ? `<select data-change="cal-editor" style="margin-left:auto"><option value="">Todos los editores</option>${S.team.filter(t => t.role !== 'Dirección').map(t => `<option value="${t.id}" ${S.cal.editor===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select>` : ''}
-    </div>${weekGoals()}<div class="cal"><div class="dows">${DOW.map(d => `<div class="dow">${d}</div>`).join('')}</div>${weeks}</div>`;
+    </div>${weekGoals()}<div class="cal ${canManage() ? 'can-move' : ''}"><div class="dows">${DOW.map(d => `<div class="dow">${d}</div>`).join('')}</div>${weeks}</div>`;
 }
 function itemForm(it, presetDate, preset){
   it = it || {}; preset = preset || {}; const editing = !!it.id; const ro = !canManage();
@@ -996,8 +1052,9 @@ function portalView(){
     </div>`;
   }).join('');
   const isEv = c.client_type === 'eventos';
-  const ptabs = isEv ? [['calendario','📅 Calendario']].concat(list.length ? [['guiones','📄 Guiones']] : [], url ? [['videos','🎬 Carpeta general']] : [])
-    : [['guiones','📄 Guiones'], ['videos','🎬 Tus videos']];
+  const showScripts = c.portal_scripts !== false;
+  const ptabs = isEv ? [['calendario','📅 Calendario']].concat(showScripts && list.length ? [['guiones','📄 Guiones']] : [], url ? [['videos','📁 Tu carpeta de ' + linkLabel(url)]] : [])
+    : (showScripts ? [['guiones','📄 Guiones']] : []).concat([['videos','🎬 Tus videos']]);
   if(!ptabs.find(t => t[0] === P.tab)) P.tab = ptabs[0][0];
   const body = P.tab === 'calendario' ? portalCalendar() : P.tab === 'videos'
     ? `<div class="cbox vbox">${url ? `<p>Aquí están tus videos, listos para revisar y descargar.</p><a class="btn" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">🎬 Abrir mi carpeta en ${linkLabel(url)}</a>` : `<p>Tu carpeta de videos todavía no está lista. En cuanto la tengamos, aparecerá aquí.</p>`}</div>`
@@ -1007,7 +1064,8 @@ function portalView(){
   return `<div class="portal">${top}
     <div class="hero"><div class="kick">Ikonico Studio</div><div class="em">${esc(c.emoji || '🎬')}</div><h1>Hola, ${esc(c.name)}</h1>
       <p>${isEv ? 'Gracias por tu confianza. Aquí está el calendario de tus eventos: dale clic a cada uno para abrir directo sus videos y sus fotos.'
-        : 'Gracias por tu confianza. Este es tu espacio: aquí puedes ver y editar tus guiones y abrir la carpeta con tus videos.'}</p></div>
+        : showScripts ? 'Gracias por tu confianza. Este es tu espacio: aquí puedes ver y editar tus guiones y abrir la carpeta con tus videos.'
+        : 'Gracias por tu confianza. Este es tu espacio: aquí puedes abrir la carpeta con tus videos.'}</p></div>
     <div class="cp-tabs">${ptabs.map(([k,l]) => `<div class="${P.tab===k?'on':''}" data-act="pt-tab" data-v="${k}">${l}</div>`).join('')}</div>
     ${body}</div>`;
 }
