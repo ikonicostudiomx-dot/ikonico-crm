@@ -163,6 +163,13 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .pill.done .pg{background:rgba(95,207,151,.18);color:var(--ok)}
 .pill.done .chk{background:var(--ok);border-color:var(--ok)}
 .pill.done .t{opacity:.75}
+.pill .day{font-size:10px;color:var(--muted);white-space:nowrap}
+.pill.cont{opacity:.82}
+.pill .rz{position:absolute;right:0;top:26px;bottom:0;width:12px;cursor:ew-resize;touch-action:none}
+.pill .rz::after{content:'';position:absolute;right:3px;top:50%;width:4px;height:18px;transform:translateY(-50%);border-radius:3px;background:var(--ed,#aebcf0);opacity:.35;transition:opacity .15s}
+.pill:hover .rz::after{opacity:1}
+.cell.span-on{background:rgba(255,75,0,.13);box-shadow:inset 0 0 0 2px var(--accent)}
+body.resizing,body.resizing *{cursor:ew-resize!important;user-select:none}
 .mytasks{margin-bottom:14px;color:var(--muted);font-size:14px}
 .mytasks summary{cursor:pointer;color:var(--text);font-weight:600}
 .mytasks pre{white-space:pre-wrap;font-family:inherit;margin:8px 0 0}
@@ -655,6 +662,44 @@ async function toggleDone(id){
     Object.assign(it, r); render(); toast(it.done ? 'Marcado como listo' : 'Reabierto');
   }catch(e){ toast(e.message); }
 }
+/* Estirar una tarjeta: se arrastra el asa del último día hasta el día final */
+const MAX_SPAN_DAYS = 3;
+const dayMs = s => Date.UTC(+s.slice(0,4), +s.slice(5,7) - 1, +s.slice(8,10));
+const dayDiff = (a, b) => Math.round((dayMs(b) - dayMs(a)) / 864e5);
+const addDays = (s, n) => new Date(dayMs(s) + n * 864e5).toISOString().slice(0, 10);
+let skipClick = false;
+function startResize(id, e){
+  const it = S.items.find(x => x.id === id); if(!it) return;
+  const start = it.start_date, orig = it.end_date || start, lim = addDays(start, MAX_SPAN_DAYS - 1), max = orig > lim ? orig : lim;
+  let end = orig;
+  const cells = [...document.querySelectorAll('.cell[data-d]')];
+  const paint = () => cells.forEach(c => c.classList.toggle('span-on', c.dataset.d >= start && c.dataset.d <= end));
+  const move = ev => {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY), cell = el && el.closest('.cell[data-d]');
+    if(!cell) return;
+    const d = cell.dataset.d; end = d < start ? start : d > max ? max : d; paint();
+  };
+  const up = async () => {
+    window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+    document.body.classList.remove('resizing'); cells.forEach(c => c.classList.remove('span-on'));
+    skipClick = true; setTimeout(() => { skipClick = false; }, 60);
+    if(end === orig) return;
+    const prev = it.end_date; it.end_date = end === start ? null : end; render();
+    try{
+      const row = {id:it.id, client_id:it.client_id, video_number:it.video_number, title:it.title, start_date:start, end_date:it.end_date,
+        editor_id:it.editor_id, progress:it.progress, done:it.done, notes:it.notes};
+      const r = await saveRow('calendar_items', row);
+      if(r && r.error) throw new Error(errMsg(r.error));
+      const n = dayDiff(start, end) + 1; toast(n === 1 ? 'Ahora dura 1 día' : `Ahora dura ${n} días`);
+    }catch(err){ it.end_date = prev; render(); toast(err.message); }
+  };
+  document.body.classList.add('resizing'); paint();
+  window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+}
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest('[data-rz]'); if(!h || !canManage()) return;
+  e.preventDefault(); e.stopPropagation(); startResize(h.dataset.rz, e);
+});
 function itemsOn(day){
   return S.items.filter(i => i.start_date <= day && day <= (i.end_date || i.start_date) && (!S.cal.editor || i.editor_id === S.cal.editor));
 }
@@ -672,12 +717,15 @@ function calendarView(){
       const c = client(it.client_id), e = member(it.editor_id), col = (e && e.color) || '#aebcf0';
       const canDone = canManage() || (S.me && it.editor_id === S.me.id), sc = scriptFor(it);
       const label = (it.video_number ? it.video_number + ' — ' : '') + (c ? c.name : 'Sin cliente');
-      return `<div class="pill ${it.done?'done':''}" data-act="cal-item" data-id="${it.id}" style="--ed:${esc(col)}" title="${esc(label+(it.title?' · '+it.title:''))}">
+      const end = it.end_date || it.start_date, span = dayDiff(it.start_date, end) + 1, nDay = dayDiff(it.start_date, ds) + 1;
+      const dayTag = span > 1 ? `<span class="day">día ${nDay}/${span}</span>` : '';
+      const handle = canManage() && ds === end ? `<span class="rz" data-rz="${it.id}" title="Arrastra para que dure más días (hasta ${MAX_SPAN_DAYS})"></span>` : '';
+      return `<div class="pill ${it.done?'done':''} ${nDay > 1 ? 'cont' : ''}" data-act="cal-item" data-id="${it.id}" style="--ed:${esc(col)}" title="${esc(label+(it.title?' · '+it.title:''))}">
         <div class="t">${esc(c&&c.emoji?c.emoji+' ':'')}${esc(label)}</div>
         <div class="who"><i class="dot"></i>${esc(e ? e.name : 'Sin responsable')}</div>
-        <div class="ft"><span class="pg">${it.done?'✓ Listo':it.progress+'%'}</span>
+        <div class="ft"><span class="pg">${it.done?'✓ Listo':it.progress+'%'}</span>${dayTag}
           ${sc ? `<button type="button" class="gs" data-act="cal-script" data-id="${sc.id}" title="Ver guion">📄 Guion</button>` : ''}</div>
-        ${canDone ? `<button type="button" class="chk" data-act="cal-done" data-id="${it.id}" title="${it.done?'Reabrir':'Marcar como listo'}">${it.done?'✓':''}</button>` : ''}</div>`;
+        ${canDone ? `<button type="button" class="chk" data-act="cal-done" data-id="${it.id}" title="${it.done?'Reabrir':'Marcar como listo'}">${it.done?'✓':''}</button>` : ''}${handle}</div>`;
     }).join('');
     cells += `<div class="cell ${out?'out':''} ${ds===tStr?'today':''}" data-act="cal-day" data-d="${ds}"><div class="num">${dd}</div>${pills}</div>`;
   }
@@ -877,6 +925,7 @@ const H = {
   overlay:(t, e) => { if(e.target === t) closeModal(); }
 };
 document.addEventListener('click', e => {
+  if(skipClick || e.target.closest('[data-rz]')){ skipClick = false; return; }
   const t = e.target.closest('[data-act]'); if(!t) return;
   const fn = H[t.dataset.act]; if(!fn) return;
   if(t.dataset.act === 'cal-day' && e.target.closest('.pill')) return;
