@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ikonico Studio · CRM</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#121819; --panel:#1a2325; --panel2:#232e31; --text:#f0e7dc; --muted:#9aa8aa; --line:#2e3b3e;
+  --accent:#ff4b00; --accent-ink:#fff; --blue:#aebcf0; --sky:#b1d8e1; --cream:#f0e7dc;
+  --ok:#5fcf97; --shadow:0 18px 50px rgba(0,0,0,.45);
+  --serif:'Instrument Serif','Times New Roman',serif;
+  --sans:'Gill Sans','Gill Sans MT','Hanken Grotesk',system-ui,sans-serif;
+}
+:root[data-theme="light"]{
+  --bg:#f0e7dc; --panel:#fbf8f3; --panel2:#ebe1d3; --text:#121819; --muted:#6a7679; --line:#dccfbd;
+  --shadow:0 18px 50px rgba(18,24,25,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.45}
+body{min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:.2px}
+a{color:inherit}
+.logo{height:38px;width:auto;display:block}
+:root[data-theme="light"] .logo{filter:invert(1)}
+
+/* header */
+.topbar{display:flex;align-items:center;gap:18px;padding:14px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:20;flex-wrap:wrap}
+.topbar .brand{display:flex;align-items:center;gap:12px}
+.topbar .brand span{font-family:var(--serif);font-size:24px;opacity:.9}
+.spacer{flex:1}
+.user-chip{display:flex;align-items:center;gap:8px;font-weight:600}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;background:var(--accent);flex:none}
+.role-tag{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.ghost{background:transparent;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px}
+.ghost:hover{border-color:var(--accent)}
+.zoom{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:13px}
+.zoom button{background:none;border:0;cursor:pointer;font-size:16px;padding:0 4px}
+
+/* tabs */
+.tabs{display:flex;gap:6px;padding:16px 28px 0;flex-wrap:wrap}
+.tab{background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;padding:10px 20px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+main{padding:26px 28px 80px;border-top:1px solid var(--line)}
+.page-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.page-head h2{font-size:38px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer}
+.btn:hover{filter:brightness(1.1)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.sec:hover{border-color:var(--accent)}
+.btn.danger{background:transparent;color:#ff7a59;border:1px solid #6b3426}
+.btn.small{padding:6px 12px;font-size:13px}
+
+/* tables & cards */
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th{text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--line)}
+td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;border-radius:20px;padding:3px 11px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;background:var(--panel2);color:var(--sky)}
+.badge.dir{background:rgba(255,75,0,.16);color:#ff8a57}
+.badge.cm{background:rgba(174,188,240,.18);color:var(--blue)}
+.badge.ok{background:rgba(95,207,151,.16);color:var(--ok)}
+.badge.off{background:rgba(154,168,170,.15);color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card.inactive{opacity:.55}
+.card .top{padding:22px 18px 12px;text-align:center}
+.card .emoji{font-size:44px;line-height:1.1}
+.card h3{font-size:26px;margin-top:8px}
+.card .meta{padding:0 18px 14px;text-align:center;color:var(--muted);font-size:13px;display:flex;flex-direction:column;gap:6px;align-items:center;flex:1}
+.card .actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--line);flex-wrap:wrap;justify-content:center}
+.empty{border:1px dashed var(--line);border-radius:16px;padding:46px 20px;text-align:center;color:var(--muted)}
+.empty h3{font-size:28px;color:var(--text);margin-bottom:6px}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+select,input[type=text],input[type=email],input[type=number],input[type=date],input[type=tel],input[type=password],textarea{
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;outline:none}
+select:focus,input:focus,textarea:focus{border-color:var(--accent)}
+.toolbar select{width:auto;min-width:200px}
+
+/* scripts */
+.script{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;gap:18px;margin-bottom:12px}
+.script .folio{font-family:var(--serif);font-size:34px;color:var(--accent);min-width:64px;line-height:1}
+.script .body{flex:1;min-width:0}
+.script .body h4{margin:0 0 6px;font-size:17px}
+.script .txt{color:var(--muted);white-space:pre-wrap;max-height:110px;overflow:hidden;font-size:14px}
+.script .side{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+
+/* calendar */
+.cal-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.cal-head h3{font-size:34px;min-width:230px;text-transform:capitalize}
+.cal-head select{width:auto}
+.cal-head input[type=number]{width:96px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.cal .dow{padding:10px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);background:var(--panel2)}
+.cell{min-height:118px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
+.cell:nth-child(7n){border-right:0}
+.cell:hover{background:var(--panel2)}
+.cell.out{opacity:.38}
+.cell.today .num{background:var(--accent);color:#fff}
+.num{align-self:flex-end;font-size:12px;font-weight:600;width:24px;height:24px;border-radius:50%;display:grid;place-items:center}
+.pill{border-radius:7px;padding:4px 7px;font-size:12px;font-weight:600;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:6px;align-items:center;justify-content:space-between}
+.pill .pg{font-size:10.5px;opacity:.85;flex:none}
+.pill.done{opacity:.6;text-decoration:line-through}
+.mytasks{margin-bottom:14px;color:var(--muted);font-size:14px}
+.mytasks summary{cursor:pointer;color:var(--text);font-weight:600}
+.mytasks pre{white-space:pre-wrap;font-family:inherit;margin:8px 0 0}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:flex-start;justify-content:center;padding:36px 16px;overflow:auto;z-index:50}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:100%;max-width:640px;padding:28px;box-shadow:var(--shadow)}
+.modal h3{font-size:30px;padding-bottom:12px;border-bottom:2px solid var(--accent);margin-bottom:18px}
+.f{margin-bottom:14px}
+.f label{display:block;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.range{display:flex;align-items:center;gap:14px}
+.range input{flex:1;accent-color:var(--accent)}
+.range b{min-width:48px;text-align:right;font-size:18px}
+.bar{height:6px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.login .box{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:34px 30px;text-align:center;box-shadow:var(--shadow)}
+.login .logo{height:52px;margin:0 auto 22px}
+.login h1{font-size:34px;margin-bottom:6px}
+.login p{color:var(--muted);margin:0 0 22px}
+.pin-dots{display:flex;gap:14px;justify-content:center;margin:6px 0 22px}
+.pin-dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted)}
+.pin-dots i.on{background:var(--accent);border-color:var(--accent)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pad button{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px 0;font-size:22px;cursor:pointer}
+.pad button:hover{border-color:var(--accent)}
+.err{color:#ff8a66;min-height:20px;margin-top:14px;font-size:14px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:11px 18px;border-radius:10px;font-weight:600;z-index:80;box-shadow:var(--shadow);max-width:90vw}
+.loading{padding:60px;text-align:center;color:var(--muted)}
+@media(max-width:760px){
+  .topbar{padding:12px 16px}.tabs{padding:12px 16px 0}main{padding:18px 14px 70px}
+  .page-head h2{font-size:30px}.row2{grid-template-columns:1fr}
+  .cell{min-height:84px;padding:4px}.pill{font-size:10.5px;padding:3px 5px}
+  .script{flex-direction:column}.script .side{flex-direction:row;align-items:center}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="modal-root"></div>
+<script>
+'use strict';
+/* ====== Configuración ====== */
+const SB_URL = 'https://ufftpwvquoohizzbrzty.supabase.co';
+const SB_KEY = 'sb_publishable_6mKJT_RRc0Ls2-VDBtdMzw_UdtRkorp';
+const DEFAULT_TASKS = "• Revisar el calendario de edición\n• Descargar los archivos de la carpeta del cliente\n• Leer los guiones de tus clientes\n• Marcar \"Listo\" cuando se apruebe un video";
+const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MON_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const DOW = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const BASE_ROLES = ['Dirección','Edición','CM'];
+
+/* ====== Utilidades ====== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const pad2 = n => String(n).padStart(2,'0');
+const ymd = (y,m,d) => `${y}-${pad2(m+1)}-${pad2(d)}`;
+const todayStr = () => { const t = new Date(); return ymd(t.getFullYear(), t.getMonth(), t.getDate()); };
+function fmtBirthday(s){ if(!s) return '—'; const [y,m,d] = s.split('-').map(Number); return `${d} ${MON_SHORT[m-1]}`; }
+function safeUrl(u){ try{ const x = new URL(String(u||'').trim()); return /^https?:$/.test(x.protocol) ? x.href : ''; }catch(e){ return ''; } }
+function linkLabel(u){
+  const h = (()=>{ try{ return new URL(u).hostname; }catch(e){ return ''; } })();
+  if(/frame\.io/.test(h)) return 'Frame.io';
+  if(/drive\.google|docs\.google/.test(h)) return 'Drive';
+  if(/dropbox/.test(h)) return 'Dropbox';
+  return 'carpeta';
+}
+function inkFor(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if(!m) return '#fff';
+  const n = parseInt(m[1],16), r = n>>16, g = (n>>8)&255, b = n&255;
+  return (0.299*r + 0.587*g + 0.114*b) > 160 ? '#121819' : '#fff';
+}
+function toast(msg){
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 3600);
+}
+const ERR_TXT = {
+  pin_incorrecto:'PIN incorrecto', demasiados_intentos:'Demasiados intentos. Espera unos minutos.',
+  pin_invalido:'El PIN debe tener exactamente 4 dígitos', pin_en_uso:'Ese PIN ya lo usa otra persona',
+  sin_permiso:'No tienes permiso para hacer esto', nombre_requerido:'Escribe un nombre',
+  ultimo_director:'No puedes eliminar al último usuario de Dirección', ya_configurado:'El CRM ya tiene usuarios'
+};
+const errMsg = c => ERR_TXT[c] || 'Algo salió mal. Intenta de nuevo.';
+
+/* ====== API ====== */
+async function rpc(fn, args){
+  let r;
+  try{
+    r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {
+      method:'POST', headers:{'Content-Type':'application/json', apikey:SB_KEY}, body:JSON.stringify(args || {})
+    });
+  }catch(e){ throw new Error('Sin conexión. Revisa tu internet.'); }
+  const txt = await r.text(); let d = null;
+  try{ d = txt ? JSON.parse(txt) : null; }catch(e){ d = txt; }
+  if(!r.ok){
+    if(d && d.message === 'sesion_invalida'){ doLogout(true); throw new Error('Tu sesión venció. Entra de nuevo con tu PIN.'); }
+    const e = new Error((d && d.message) || 'Error de servidor'); e.code = d && d.code; throw e;
+  }
+  return d;
+}
+const T = () => S.token;
+const select = tbl => rpc('crm_select', {p_token:T(), p_tbl:tbl});
+const saveRow = (tbl,row) => rpc('crm_save', {p_token:T(), p_tbl:tbl, p_row:row});
+async function delRow(tbl,id){
+  try{ return await rpc('crm_delete', {p_token:T(), p_tbl:tbl, p_id:id}); }
+  catch(e){
+    if(e.code === 'PGRST202') return {error:'sin_funcion'};
+    throw e;
+  }
+}
+
+/* ====== Estado ====== */
+const S = {
+  token: store.get('ikonico_token',''), me:null, view:'calendar', loading:true, needBoot:false,
+  team:[], clients:[], scripts:[], items:[],
+  scriptClient:'', cal:{y:new Date().getFullYear(), m:new Date().getMonth(), editor:''},
+  clientFilter:'activos', pin:'', loginErr:'', theme: store.get('ikonico_theme','dark'), zoom: +store.get('ikonico_zoom','100')
+};
+const isAdmin = () => S.me && S.me.role === 'Dirección';
+const canManage = () => S.me && (S.me.role === 'Dirección' || S.me.role === 'CM');
+const member = id => S.team.find(t => t.id === id);
+const client = id => S.clients.find(c => c.id === id);
+const roleBadge = r => `<span class="badge ${r==='Dirección'?'dir':r==='CM'?'cm':''}">${esc(r)}</span>`;
+
+function applyPrefs(){
+  document.documentElement.setAttribute('data-theme', S.theme);
+  document.body.style.zoom = S.zoom === 100 ? '' : (S.zoom/100);
+}
+
+async function loadAll(){
+  const [team, clients, scripts, items] = await Promise.all(['team_members','clients','scripts','calendar_items'].map(select));
+  S.team = team || []; S.clients = clients || []; S.scripts = scripts || []; S.items = items || [];
+}
+
+/* ====== Sesión ====== */
+async function boot(){
+  applyPrefs();
+  if(S.token){
+    try{ S.me = await rpc('crm_me', {p_token:S.token}); await loadAll(); S.loading = false; defaultView(); render(); return; }
+    catch(e){ S.token = ''; store.del('ikonico_token'); }
+  }
+  try{ S.needBoot = await rpc('crm_bootstrap_needed'); }catch(e){ S.needBoot = false; S.loginErr = 'No pude conectar con la base de datos.'; }
+  S.loading = false; render();
+}
+function defaultView(){
+  S.view = isAdmin() ? 'team' : (S.me.role === 'CM' ? 'clients' : 'calendar');
+  if(!isAdmin()) S.view = S.me.role === 'CM' ? 'clients' : 'calendar';
+}
+async function afterAuth(res){
+  if(res.error){ S.loginErr = errMsg(res.error); S.pin = ''; render(); return; }
+  S.token = res.token; S.me = res.member; store.set('ikonico_token', S.token);
+  S.loginErr = ''; S.pin = ''; S.loading = true; render();
+  try{ await loadAll(); }catch(e){ toast(e.message); }
+  S.loading = false; defaultView(); render();
+}
+function doLogout(silent){
+  if(S.token && !silent){ rpc('crm_logout', {p_token:S.token}).catch(()=>{}); }
+  S.token = ''; S.me = null; store.del('ikonico_token'); S.pin = ''; S.loginErr = '';
+  rpc('crm_bootstrap_needed').then(v => { S.needBoot = v; render(); }).catch(()=>render());
+  render();
+}
+
+/* ====== Render ====== */
+function logoImgs(){ return `<img class="logo" src="logo.png" alt="Ikonico Studio">`; }
+
+function render(){
+  const root = $('#root');
+  if(S.loading){ root.innerHTML = `<div class="loading">Cargando…</div>`; return; }
+  if(!S.me){ root.innerHTML = loginView(); bindLogin(); return; }
+  const tabs = [];
+  if(isAdmin()) tabs.push(['team','Team']);
+  if(canManage()) tabs.push(['clients','Clientes']);
+  tabs.push(['scripts', canManage() ? 'Guiones' : 'Mis guiones']);
+  tabs.push(['calendar','Calendario de edición']);
+  if(!tabs.find(t => t[0] === S.view)) S.view = tabs[0][0];
+  let main = '';
+  if(S.view === 'team') main = teamView();
+  else if(S.view === 'clients') main = clientsView();
+  else if(S.view === 'scripts') main = scriptsView();
+  else main = calendarView();
+  root.innerHTML = `
+  <div class="topbar">
+    <div class="brand">${logoImgs()}<span>CRM</span></div>
+    <div class="spacer"></div>
+    <div class="user-chip"><span class="dot" style="background:${esc(S.me.color||'#ff4b00')}"></span>${esc(S.me.name)}<span class="role-tag">${esc(S.me.role)}</span></div>
+    <button class="ghost" data-act="theme" title="Cambiar tema">${S.theme==='dark'?'☀︎ Claro':'☾ Oscuro'}</button>
+    <div class="zoom"><button data-act="zoom" data-d="-10">−</button><span>${S.zoom}%</span><button data-act="zoom" data-d="10">+</button></div>
+    <button class="ghost" data-act="logout">Cerrar sesión</button>
+  </div>
+  <div class="tabs">${tabs.map(([k,l]) => `<div class="tab ${S.view===k?'active':''}" data-act="tab" data-v="${k}">${l}</div>`).join('')}</div>
+  <main>${main}</main>`;
+}
+
+/* ---- Login ---- */
+function loginView(){
+  if(S.needBoot){
+    return `<div class="login"><div class="box">${logoImgs()}
+      <h1>Bienvenida</h1><p>Crea tu usuario de Dirección. Con este PIN entrarás siempre al CRM.</p>
+      <form id="boot-form" autocomplete="off">
+        <div class="f" style="text-align:left"><label>Tu nombre</label><input type="text" name="name" required placeholder="Ej. Sofía Loarca"></div>
+        <div class="f" style="text-align:left"><label>Tu PIN (4 dígitos)</label><input type="password" name="pin" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" required placeholder="••••"></div>
+        <div class="f" style="text-align:left"><label>Repite tu PIN</label><input type="password" name="pin2" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" required placeholder="••••"></div>
+        <button class="btn" style="width:100%">Crear mi acceso</button>
+      </form><div class="err">${esc(S.loginErr)}</div></div></div>`;
+  }
+  const dots = [0,1,2,3].map(i => `<i class="${i < S.pin.length ? 'on':''}"></i>`).join('');
+  const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'].map(k => k === '' ? '<span></span>' : `<button data-act="key" data-k="${k}">${k}</button>`).join('');
+  return `<div class="login"><div class="box">${logoImgs()}
+    <h1>Ingresa tu PIN</h1><p>Producción de eventos y contenido</p>
+    <div class="pin-dots">${dots}</div><div class="pad">${keys}</div>
+    <div class="err">${esc(S.loginErr)}</div></div></div>`;
+}
+function bindLogin(){
+  const f = $('#boot-form');
+  if(f) f.addEventListener('submit', async e => {
+    e.preventDefault(); const d = new FormData(f);
+    if(d.get('pin') !== d.get('pin2')){ S.loginErr = 'Los PIN no coinciden'; render(); return; }
+    try{ const res = await rpc('crm_bootstrap', {p_name:d.get('name'), p_pin:d.get('pin')}); afterAuth(res); }
+    catch(err){ S.loginErr = err.message; render(); }
+  });
+}
+async function pinKey(k){
+  if(k === '⌫') S.pin = S.pin.slice(0,-1);
+  else if(S.pin.length < 4) S.pin += k;
+  S.loginErr = ''; render();
+  if(S.pin.length === 4){
+    try{ const res = await rpc('crm_login', {p_pin:S.pin}); afterAuth(res); }
+    catch(err){ S.pin = ''; S.loginErr = err.message; render(); }
+  }
+}
+document.addEventListener('keydown', e => {
+  if(S.me || S.needBoot || S.loading) return;
+  if(/^[0-9]$/.test(e.key)) pinKey(e.key); else if(e.key === 'Backspace') pinKey('⌫');
+});
+
+/* ---- Team ---- */
+function teamView(){
+  const rows = S.team.map(t => `<tr>
+    <td><span class="dot" style="background:${esc(t.color||'#ff4b00')};margin-right:10px"></span><b>${esc(t.name)}</b></td>
+    <td>${roleBadge(t.role)}</td><td>${fmtBirthday(t.birthday)}</td>
+    <td>${esc(t.fav_sweet||'—')}</td><td>${esc(t.fav_drink||'—')}</td>
+    <td>${esc(t.whatsapp||'—')}</td><td style="max-width:240px">${esc(t.address||'—')}</td>
+    <td>${t.card_number ? '•••• ' + esc(String(t.card_number).replace(/\s/g,'').slice(-4)) + (t.bank ? ' · ' + esc(t.bank) : '') : '—'}</td>
+    <td style="white-space:nowrap"><button class="btn sec small" data-act="team-edit" data-id="${t.id}">Editar</button>
+      <button class="btn danger small" data-act="team-del" data-id="${t.id}">×</button></td></tr>`).join('');
+  return `<div class="page-head"><h2>Team</h2><div class="spacer"></div>
+    <button class="btn" data-act="team-new">+ Nuevo miembro</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Puesto</th><th>Cumpleaños</th><th>Dulce</th><th>Bebida</th><th>WhatsApp</th><th>Dirección</th><th>Tarjeta</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <p class="hint" style="margin-top:12px">Dirección ve y edita todo. CM ve todos los clientes y guiones. Cualquier otro puesto (Edición u otros) ve solo los clientes, guiones y videos que le toquen.</p>`;
+}
+function roleOptions(sel){
+  const set = [...new Set([...BASE_ROLES, ...S.team.map(t => t.role)])];
+  const known = set.includes(sel);
+  return set.map(r => `<option ${r===sel?'selected':''}>${esc(r)}</option>`).join('') +
+    `<option value="__otro" ${sel && !known ? 'selected':''}>Otro puesto…</option>`;
+}
+function teamForm(t){
+  t = t || {}; const editing = !!t.id;
+  const body = `<input type="hidden" name="id" value="${esc(t.id||'')}">
+  <div class="row2"><div class="f"><label>Nombre completo</label><input type="text" name="name" required value="${esc(t.name||'')}" placeholder="Ej. Fer Salazar"></div>
+  <div class="f"><label>Puesto</label><select name="role" id="role-sel">${roleOptions(t.role || 'Edición')}</select>
+    <input type="text" id="role-other" name="role_other" placeholder="Escribe el puesto" style="display:none;margin-top:8px"></div></div>
+  <div class="row2"><div class="f"><label>Color asignado</label><input type="color" name="color" value="${esc(t.color||'#ff4b00')}" style="height:44px;padding:4px"></div>
+  <div class="f"><label>Cumpleaños</label><input type="date" name="birthday" value="${esc(t.birthday||'')}"></div></div>
+  <div class="f"><label>Dirección</label><input type="text" name="address" value="${esc(t.address||'')}" placeholder="Calle, colonia, ciudad"></div>
+  <div class="row2"><div class="f"><label>Dulce favorito</label><input type="text" name="fav_sweet" value="${esc(t.fav_sweet||'')}" placeholder="Ej. Skittles"></div>
+  <div class="f"><label>Bebida favorita</label><input type="text" name="fav_drink" value="${esc(t.fav_drink||'')}" placeholder="Ej. Café latte"></div></div>
+  <div class="row2"><div class="f"><label>Número de tarjeta (para depósitos)</label><input type="text" name="card_number" value="${esc(t.card_number||'')}" inputmode="numeric" autocomplete="off"></div>
+  <div class="f"><label>Banco</label><input type="text" name="bank" value="${esc(t.bank||'')}" placeholder="Ej. BBVA"></div></div>
+  <div class="row2"><div class="f"><label>WhatsApp</label><input type="tel" name="whatsapp" value="${esc(t.whatsapp||'')}" placeholder="442 123 4567"></div>
+  <div class="f"><label>Email</label><input type="email" name="email" value="${esc(t.email||'')}" placeholder="nombre@ejemplo.com"></div></div>
+  <div class="f"><label>PIN de acceso (4 dígitos)${editing ? ' — déjalo vacío para no cambiarlo' : ''}</label>
+    <input type="password" name="pin" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="new-password" ${editing ? '' : 'required'} placeholder="••••">
+    <div class="hint">Cada persona entra al CRM con su propio PIN. Compártelo por WhatsApp; puedes cambiarlo cuando quieras.</div></div>
+  <div class="f"><label>Tareas semanales</label><textarea name="weekly_tasks" rows="4">${esc(t.weekly_tasks || DEFAULT_TASKS)}</textarea>
+    <div class="hint">Cada persona las ve en su Calendario de edición.</div></div>`;
+  openModal(editing ? 'Editar miembro del team' : 'Nuevo miembro del team', body, async fd => {
+    let role = fd.get('role'); if(role === '__otro') role = (fd.get('role_other')||'').trim();
+    if(!role) throw new Error('Escribe el puesto');
+    const row = {name:fd.get('name').trim(), role, color:fd.get('color'), birthday:fd.get('birthday')||null,
+      address:fd.get('address')||null, fav_sweet:fd.get('fav_sweet')||null, fav_drink:fd.get('fav_drink')||null,
+      card_number:fd.get('card_number')||null, bank:fd.get('bank')||null, whatsapp:fd.get('whatsapp')||null,
+      email:fd.get('email')||null, weekly_tasks:fd.get('weekly_tasks')||null};
+    if(fd.get('id')) row.id = fd.get('id');
+    const saved = await saveRow('team_members', row);
+    if(saved && saved.error) throw new Error(errMsg(saved.error));
+    const pin = fd.get('pin');
+    if(pin){
+      const r = await rpc('crm_set_pin', {p_token:T(), p_member_id:saved.id, p_pin:pin});
+      if(r && r.error){ await refresh(); throw new Error('Se guardó la persona, pero: ' + errMsg(r.error)); }
+    }
+    await refresh(); toast('Guardado');
+  }, () => {
+    const sel = $('#role-sel'), o = $('#role-other');
+    const sync = () => { o.style.display = sel.value === '__otro' ? 'block' : 'none'; if(sel.value==='__otro') o.required = true; else o.required = false; };
+    sel.addEventListener('change', sync);
+    if(t.role && !BASE_ROLES.includes(t.role) && ![...new Set(S.team.map(x=>x.role))].includes(t.role)) sel.value='__otro';
+    sync();
+  });
+}
+
+/* ---- Clientes ---- */
+function clientsView(){
+  let list = S.clients;
+  if(S.clientFilter === 'activos') list = list.filter(c => c.status !== 'Inactivo');
+  else if(S.clientFilter === 'inactivos') list = list.filter(c => c.status === 'Inactivo');
+  const cards = list.map(c => {
+    const ed = [member(c.editor_id), member(c.editor2_id)].filter(Boolean).map(m => esc(m.name)).join(' + ');
+    const url = safeUrl(c.folder_link);
+    const nScripts = S.scripts.filter(s => s.client_id === c.id).length;
+    return `<div class="card ${c.status==='Inactivo'?'inactive':''}">
+      <div class="top"><div class="emoji">${esc(c.emoji||'🎬')}</div><h3>${esc(c.name)}</h3></div>
+      <div class="meta">
+        <div><span class="badge ${c.status==='Inactivo'?'off':'ok'}">${esc(c.status)}</span> <span class="badge">${c.client_type==='recurrente' ? 'Recurrente' + (c.videos_per_month ? ' · ' + c.videos_per_month + ' videos/mes' : '') : 'Por proyecto'}</span></div>
+        <div>Editor: ${ed || 'sin asignar'}</div>
+        ${member(c.cm_id) ? `<div>CM: ${esc(member(c.cm_id).name)}</div>` : ''}
+        <div>${nScripts} guion${nScripts===1?'':'es'}</div>
+      </div>
+      <div class="actions">
+        <button class="btn small" data-act="client-scripts" data-id="${c.id}">Guiones</button>
+        ${url ? `<a class="btn sec small" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">Abrir ${linkLabel(url)}</a>` : ''}
+        ${isAdmin() ? `<button class="btn sec small" data-act="client-edit" data-id="${c.id}">Editar</button><button class="btn danger small" data-act="client-del" data-id="${c.id}">×</button>` : ''}
+      </div></div>`;
+  }).join('');
+  return `<div class="page-head"><h2>Clientes</h2><div class="spacer"></div>
+    <select data-change="client-filter" style="width:auto"><option value="activos" ${S.clientFilter==='activos'?'selected':''}>Activos</option><option value="inactivos" ${S.clientFilter==='inactivos'?'selected':''}>Inactivos</option><option value="todos" ${S.clientFilter==='todos'?'selected':''}>Todos</option></select>
+    ${isAdmin() ? `<button class="btn" data-act="client-new">+ Nuevo cliente</button>` : ''}</div>
+    ${list.length ? `<div class="grid">${cards}</div>` : `<div class="empty"><h3>Aún no hay clientes</h3>Da de alta al primero con “Nuevo cliente”.</div>`}`;
+}
+function memberOptions(sel, role){
+  const opts = S.team.filter(t => !role || t.role === role).map(t => `<option value="${t.id}" ${t.id===sel?'selected':''}>${esc(t.name)} · ${esc(t.role)}</option>`).join('');
+  return `<option value="">— Sin asignar —</option>` + opts;
+}
+function clientForm(c){
+  c = c || {}; const editing = !!c.id;
+  const body = `<input type="hidden" name="id" value="${esc(c.id||'')}">
+  <div class="f"><label>Nombre del cliente / marca</label><input type="text" name="name" required value="${esc(c.name||'')}" placeholder="Ej. Villa Bonita"></div>
+  <div class="row2"><div class="f"><label>Emoji identificador</label><input type="text" name="emoji" maxlength="4" value="${esc(c.emoji||'')}" placeholder="Ej. 🎓"></div>
+  <div class="f"><label>Estado</label><select name="status"><option ${c.status!=='Inactivo'?'selected':''}>Activo</option><option ${c.status==='Inactivo'?'selected':''}>Inactivo</option></select></div></div>
+  <div class="f"><label>Correo del cliente</label><input type="email" name="email" value="${esc(c.email||'')}" placeholder="cliente@ejemplo.com"></div>
+  <div class="f"><label>Link a la carpeta de contenido (Frame.io, Drive o Dropbox)</label><input type="text" name="folder_link" value="${esc(c.folder_link||'')}" placeholder="https://…">
+    <div class="hint">Este link se abre desde la tarjeta del calendario.</div></div>
+  <div class="row2"><div class="f"><label>Tipo de cliente</label><select name="client_type" id="ct"><option value="recurrente" ${c.client_type!=='proyecto'?'selected':''}>Recurrente (iguala mensual)</option><option value="proyecto" ${c.client_type==='proyecto'?'selected':''}>Por proyecto / evento (ej. graduaciones)</option></select></div>
+  <div class="f" id="vpm"><label>Videos al mes</label><input type="number" name="videos_per_month" min="0" max="99" value="${esc(c.videos_per_month ?? 4)}"></div></div>
+  <div class="row2"><div class="f"><label>Editor asignado</label><select name="editor_id">${memberOptions(c.editor_id)}</select></div>
+  <div class="f"><label>Editor 2 (opcional)</label><select name="editor2_id">${memberOptions(c.editor2_id)}</select></div></div>
+  <div class="f"><label>Community manager</label><select name="cm_id">${memberOptions(c.cm_id)}</select></div>
+  <div class="f"><label>Notas</label><textarea name="notes" rows="3">${esc(c.notes||'')}</textarea></div>`;
+  openModal(editing ? 'Editar cliente' : 'Nuevo cliente', body, async fd => {
+    const link = (fd.get('folder_link')||'').trim();
+    if(link && !safeUrl(link)) throw new Error('El link debe empezar con https://');
+    const row = {name:fd.get('name').trim(), emoji:fd.get('emoji')||null, status:fd.get('status'), email:fd.get('email')||null,
+      folder_link:link||null, client_type:fd.get('client_type'),
+      videos_per_month: fd.get('client_type')==='recurrente' && fd.get('videos_per_month') !== '' ? +fd.get('videos_per_month') : null,
+      editor_id:fd.get('editor_id')||null, editor2_id:fd.get('editor2_id')||null, cm_id:fd.get('cm_id')||null, notes:fd.get('notes')||null};
+    if(fd.get('id')) row.id = fd.get('id');
+    const r = await saveRow('clients', row);
+    if(r && r.error) throw new Error(errMsg(r.error));
+    await refresh(); toast('Cliente guardado');
+  }, () => {
+    const ct = $('#ct'), v = $('#vpm'); const sync = () => v.style.display = ct.value === 'recurrente' ? '' : 'none';
+    ct.addEventListener('change', sync); sync();
+  });
+}
+
+/* ---- Guiones ---- */
+function scriptsView(){
+  const visible = S.clients;
+  if(!S.scriptClient || !visible.find(c => c.id === S.scriptClient)) S.scriptClient = visible[0] ? visible[0].id : '';
+  const c = client(S.scriptClient);
+  const list = S.scripts.filter(s => s.client_id === S.scriptClient)
+    .sort((a,b) => String(a.video_number).localeCompare(String(b.video_number), undefined, {numeric:true}));
+  const cards = list.map(s => `<div class="script">
+    <div class="folio">#${esc(s.video_number)}</div>
+    <div class="body"><h4>${esc(s.title || 'Sin título')}</h4><div class="txt">${esc(s.content || 'Sin indicaciones todavía.')}</div></div>
+    <div class="side"><span class="badge ${s.status==='Listo'?'ok':''}">${esc(s.status)}</span>
+      <button class="btn sec small" data-act="script-edit" data-id="${s.id}">${canManage()?'Editar':'Ver'}</button>
+      ${canManage() ? `<button class="btn sec small" data-act="script-sched" data-id="${s.id}">Programar</button>` : ''}
+      ${isAdmin() ? `<button class="btn danger small" data-act="script-del" data-id="${s.id}">×</button>` : ''}</div></div>`).join('');
+  return `<div class="page-head"><h2>${canManage() ? 'Guiones' : 'Mis guiones'}</h2><div class="spacer"></div>
+    ${canManage() && c ? `<button class="btn" data-act="script-new">+ Nuevo guion</button>` : ''}</div>
+    ${visible.length ? `<div class="toolbar"><select data-change="script-client">${visible.map(x => `<option value="${x.id}" ${x.id===S.scriptClient?'selected':''}>${esc(x.emoji||'🎬')} ${esc(x.name)}</option>`).join('')}</select>
+      ${c ? `<span class="hint">${list.length} video${list.length===1?'':'s'} con guion</span>` : ''}</div>
+      ${list.length ? cards : `<div class="empty"><h3>Sin guiones todavía</h3>${canManage() ? 'Crea el primero: número de video y qué quieres exactamente en él, para que el editor lo entienda.' : 'Aquí verás las indicaciones de cada video que te asignen.'}</div>`}`
+    : `<div class="empty"><h3>No hay clientes por aquí</h3>${canManage() ? 'Primero da de alta un cliente.' : 'Cuando te asignen un cliente, sus guiones aparecerán aquí.'}</div>`}`;
+}
+function nextFolio(clientId){
+  const nums = S.scripts.filter(s => s.client_id === clientId).map(s => parseInt(s.video_number,10)).filter(n => !isNaN(n));
+  return String((nums.length ? Math.max(...nums) : 0) + 1);
+}
+function scriptForm(s){
+  s = s || {}; const editing = !!s.id; const ro = !canManage();
+  const body = `<input type="hidden" name="id" value="${esc(s.id||'')}">
+  <div class="row2"><div class="f"><label>Número de video / folio</label><input type="text" name="video_number" required value="${esc(s.video_number || nextFolio(S.scriptClient))}" ${ro?'disabled':''}></div>
+  <div class="f"><label>Estado</label><select name="status" ${ro?'disabled':''}>${['Pendiente','En edición','Listo'].map(x => `<option ${(s.status||'Pendiente')===x?'selected':''}>${x}</option>`).join('')}</select></div></div>
+  <div class="f"><label>Título del video</label><input type="text" name="title" value="${esc(s.title||'')}" ${ro?'disabled':''} placeholder="Ej. Tour por las instalaciones"></div>
+  <div class="f"><label>Guion / qué quieres en este video</label><textarea name="content" rows="12" ${ro?'disabled':''} placeholder="Tomas, textos en pantalla, música, duración, referencias…">${esc(s.content||'')}</textarea></div>`;
+  openModal(editing ? (ro ? 'Guion' : 'Editar guion') : 'Nuevo guion', body, ro ? null : async fd => {
+    const row = {client_id:S.scriptClient, video_number:fd.get('video_number').trim(), title:fd.get('title')||null, content:fd.get('content')||null, status:fd.get('status')};
+    if(fd.get('id')) row.id = fd.get('id');
+    const r = await saveRow('scripts', row);
+    if(r && r.error) throw new Error(errMsg(r.error));
+    await refresh(); toast('Guion guardado');
+  });
+}
+
+/* ---- Calendario ---- */
+function itemsOn(day){
+  return S.items.filter(i => i.start_date <= day && day <= (i.end_date || i.start_date) && (!S.cal.editor || i.editor_id === S.cal.editor));
+}
+function calendarView(){
+  const {y,m} = S.cal; const first = new Date(y,m,1).getDay(); const days = new Date(y,m+1,0).getDate();
+  const prevDays = new Date(y,m,0).getDate(); const tStr = todayStr();
+  let cells = DOW.map(d => `<div class="dow">${d}</div>`).join('');
+  const total = Math.ceil((first + days) / 7) * 7;
+  for(let i = 0; i < total; i++){
+    let dy = y, dm = m, dd = i - first + 1, out = false;
+    if(dd < 1){ dm = m-1; dd = prevDays + dd; out = true; if(dm < 0){ dm = 11; dy = y-1; } }
+    else if(dd > days){ dd = dd - days; dm = m+1; out = true; if(dm > 11){ dm = 0; dy = y+1; } }
+    const ds = ymd(dy,dm,dd);
+    const pills = itemsOn(ds).map(it => {
+      const c = client(it.client_id), e = member(it.editor_id), col = (e && e.color) || '#aebcf0';
+      return `<div class="pill ${it.done?'done':''}" data-act="cal-item" data-id="${it.id}" style="background:${esc(col)};color:${inkFor(col)}" title="${esc((c?c.name:'')+' · '+(it.title||''))}">
+        <span style="overflow:hidden;text-overflow:ellipsis">${esc(c?(c.emoji||'')+' '+c.name:'Sin cliente')}${it.video_number?' · #'+esc(it.video_number):''}</span>
+        <span class="pg">${it.done?'✓':it.progress+'%'}</span></div>`;
+    }).join('');
+    cells += `<div class="cell ${out?'out':''} ${ds===tStr?'today':''}" data-act="cal-day" data-d="${ds}"><div class="num">${dd}</div>${pills}</div>`;
+  }
+  const yrs = []; for(let k = new Date().getFullYear()-2; k <= new Date().getFullYear()+8; k++) yrs.push(k);
+  if(!yrs.includes(y)) yrs.push(y);
+  const tasks = S.me.weekly_tasks ? `<details class="mytasks"><summary>Mis tareas semanales</summary><pre>${esc(S.me.weekly_tasks)}</pre></details>` : '';
+  return `<div class="page-head"><h2>Calendario de edición</h2><div class="spacer"></div>
+    ${canManage() ? `<button class="btn" data-act="cal-new">+ Asignar video</button>` : ''}</div>${tasks}
+    <div class="cal-head">
+      <button class="ghost" data-act="cal-prev">‹</button><h3>${MONTHS[m]} ${y}</h3><button class="ghost" data-act="cal-next">›</button>
+      <select data-change="cal-month">${MONTHS.map((n,i) => `<option value="${i}" ${i===m?'selected':''}>${n[0].toUpperCase()+n.slice(1)}</option>`).join('')}</select>
+      <select data-change="cal-year">${yrs.sort().map(k => `<option ${k===y?'selected':''}>${k}</option>`).join('')}</select>
+      <button class="ghost" data-act="cal-today">Hoy</button>
+      ${canManage() ? `<select data-change="cal-editor" style="margin-left:auto"><option value="">Todos los editores</option>${S.team.filter(t => t.role !== 'Dirección').map(t => `<option value="${t.id}" ${S.cal.editor===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select>` : ''}
+    </div><div class="cal">${cells}</div>`;
+}
+function itemForm(it, presetDate, preset){
+  it = it || {}; preset = preset || {}; const editing = !!it.id; const ro = !canManage();
+  const cl = it.client_id || preset.client_id || '';
+  const clientsOpt = `<option value="">— Elige cliente —</option>` + S.clients.filter(c => c.status !== 'Inactivo' || c.id === cl)
+    .map(c => `<option value="${c.id}" ${c.id===cl?'selected':''}>${esc(c.emoji||'')} ${esc(c.name)}</option>`).join('');
+  const prog = it.progress ?? 0;
+  const body = `<input type="hidden" name="id" value="${esc(it.id||'')}">
+  <div class="row2"><div class="f"><label>Fecha de inicio</label><input type="date" name="start_date" required value="${esc(it.start_date||presetDate||todayStr())}" ${ro?'disabled':''}></div>
+  <div class="f"><label>Fecha de fin (opcional)</label><input type="date" name="end_date" value="${esc(it.end_date||'')}" ${ro?'disabled':''}></div></div>
+  <div class="row2"><div class="f"><label>Cliente</label><select name="client_id" id="it-client" ${ro?'disabled':''}>${clientsOpt}</select></div>
+  <div class="f"><label>Folio / número de video</label><input type="text" name="video_number" value="${esc(it.video_number||preset.video_number||'')}" ${ro?'disabled':''} placeholder="Ej. 3"></div></div>
+  <div class="f"><label>Título o nota del video</label><input type="text" name="title" value="${esc(it.title||preset.title||'')}" ${ro?'disabled':''}></div>
+  <div class="f"><label>Responsable (editor)</label><select name="editor_id" id="it-editor" ${ro?'disabled':''}>${memberOptions(it.editor_id || preset.editor_id)}</select></div>
+  <div class="f"><label>Progreso de edición</label><div class="range"><input type="range" name="progress" id="it-prog" min="0" max="100" step="5" value="${prog}"><b id="it-prog-v">${prog}%</b></div>
+    <div class="bar" style="margin-top:8px"><i id="it-bar" style="width:${prog}%"></i></div></div>
+  <div class="f"><label>Notas</label><textarea name="notes" rows="2" ${ro?'disabled':''}>${esc(it.notes||'')}</textarea></div>
+  <div class="mfoot" style="justify-content:flex-start;margin-top:0"><button type="button" class="btn sec small" id="it-done">✓ Marcar como listo</button>
+    <a class="btn sec small" id="it-folder" target="_blank" rel="noopener" style="text-decoration:none">Abrir carpeta</a></div>`;
+  openModal(editing ? 'Tarjeta de video' : 'Asignar video', body, async fd => {
+    const prog = +fd.get('progress');
+    if(ro){
+      const r = await rpc('crm_set_progress', {p_token:T(), p_id:it.id, p_progress:prog});
+      if(r && r.error) throw new Error(errMsg(r.error));
+    }else{
+      if(!fd.get('client_id')) throw new Error('Elige un cliente');
+      const row = {client_id:fd.get('client_id'), video_number:fd.get('video_number')||null, title:fd.get('title')||null,
+        start_date:fd.get('start_date'), end_date:fd.get('end_date')||null, editor_id:fd.get('editor_id')||null,
+        progress:prog, done:prog === 100, notes:fd.get('notes')||null};
+      if(row.end_date && row.end_date < row.start_date) throw new Error('La fecha de fin no puede ser antes del inicio');
+      if(fd.get('id')) row.id = fd.get('id');
+      const r = await saveRow('calendar_items', row);
+      if(r && r.error) throw new Error(errMsg(r.error));
+    }
+    await refresh(); toast('Guardado');
+  }, () => {
+    const p = $('#it-prog'), pv = $('#it-prog-v'), bar = $('#it-bar'), d = $('#it-done'), f = $('#it-folder'), cs = $('#it-client'), ed = $('#it-editor');
+    const sync = () => { pv.textContent = p.value + '%'; bar.style.width = p.value + '%'; d.textContent = +p.value === 100 ? '↺ Reabrir (95%)' : '✓ Marcar como listo'; };
+    p.addEventListener('input', sync);
+    d.addEventListener('click', () => { p.value = +p.value === 100 ? 95 : 100; sync(); });
+    const folder = () => { const c = client(cs.value), u = c ? safeUrl(c.folder_link) : ''; if(u){ f.href = u; f.style.opacity = 1; f.style.pointerEvents = ''; f.textContent = 'Abrir ' + linkLabel(u); } else { f.removeAttribute('href'); f.style.opacity = .4; f.style.pointerEvents = 'none'; f.textContent = 'Sin carpeta'; } };
+    cs.addEventListener('change', () => { const c = client(cs.value); if(c && c.editor_id && !ed.value) ed.value = c.editor_id; folder(); });
+    sync(); folder();
+  }, editing && isAdmin() ? async () => {
+    if(!confirm('¿Eliminar esta tarjeta del calendario?')) return false;
+    const r = await delRow('calendar_items', it.id);
+    if(r && r.error) throw new Error(r.error === 'sin_funcion' ? 'El borrado aún no está activado en la base de datos.' : errMsg(r.error));
+    await refresh(); toast('Eliminado'); return true;
+  } : null);
+}
+
+/* ====== Modal ====== */
+function closeModal(){ $('#modal-root').innerHTML = ''; }
+function openModal(title, body, onSubmit, onMount, onDelete){
+  $('#modal-root').innerHTML = `<div class="overlay" data-act="overlay"><div class="modal"><h3>${esc(title)}</h3>
+    <form id="mform" autocomplete="off">${body}
+    <div class="err" id="merr" style="margin-top:6px"></div>
+    <div class="mfoot">${onDelete ? '<button type="button" class="btn danger" id="mdel" style="margin-right:auto">Eliminar</button>' : ''}
+      <button type="button" class="btn sec" data-act="modal-close">${onSubmit ? 'Cancelar' : 'Cerrar'}</button>${onSubmit ? '<button class="btn" id="msave">Guardar</button>' : ''}</div></form></div></div>`;
+  const form = $('#mform');
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); if(!onSubmit) return;
+    const b = $('#msave'); b.disabled = true; b.textContent = 'Guardando…'; $('#merr').textContent = '';
+    try{ await onSubmit(new FormData(form)); closeModal(); }
+    catch(err){ $('#merr').textContent = err.message; b.disabled = false; b.textContent = 'Guardar'; }
+  });
+  if(onDelete){ $('#mdel').addEventListener('click', async () => {
+    try{ if(await onDelete()) closeModal(); }catch(err){ $('#merr').textContent = err.message; } }); }
+  if(onMount) onMount();
+  const first = form.querySelector('input:not([type=hidden]):not([disabled]),textarea'); if(first && !first.type.match(/date|color|range/)) first.focus();
+}
+async function refresh(){ await loadAll(); try{ S.me = await rpc('crm_me', {p_token:T()}); }catch(e){} render(); }
+
+/* ====== Eventos ====== */
+async function confirmDelete(tbl, id, label){
+  if(!confirm(`¿Eliminar ${label}? Esta acción no se puede deshacer.`)) return;
+  try{
+    const r = await delRow(tbl, id);
+    if(r && r.error){ toast(r.error === 'sin_funcion' ? 'El borrado aún no está activado en la base de datos.' : errMsg(r.error)); return; }
+    await refresh(); toast('Eliminado');
+  }catch(e){ toast(e.message); }
+}
+const H = {
+  tab:(t) => { S.view = t.dataset.v; render(); },
+  theme:() => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; store.set('ikonico_theme', S.theme); applyPrefs(); render(); },
+  zoom:(t) => { S.zoom = Math.min(130, Math.max(60, S.zoom + (+t.dataset.d))); store.set('ikonico_zoom', S.zoom); applyPrefs(); render(); },
+  logout:() => doLogout(),
+  key:(t) => pinKey(t.dataset.k),
+  'modal-close':() => closeModal(),
+  'team-new':() => teamForm(),
+  'team-edit':(t) => teamForm(S.team.find(x => x.id === t.dataset.id)),
+  'team-del':(t) => { const m = member(t.dataset.id); confirmDelete('team_members', t.dataset.id, m ? m.name : 'esta persona'); },
+  'client-new':() => clientForm(),
+  'client-edit':(t) => clientForm(client(t.dataset.id)),
+  'client-del':(t) => { const c = client(t.dataset.id); confirmDelete('clients', t.dataset.id, `al cliente ${c ? c.name : ''} (también sus guiones y videos)`); },
+  'client-scripts':(t) => { S.scriptClient = t.dataset.id; S.view = 'scripts'; render(); },
+  'script-new':() => scriptForm(),
+  'script-edit':(t) => scriptForm(S.scripts.find(x => x.id === t.dataset.id)),
+  'script-del':(t) => confirmDelete('scripts', t.dataset.id, 'este guion'),
+  'script-sched':(t) => { const s = S.scripts.find(x => x.id === t.dataset.id), c = client(s.client_id);
+    itemForm(null, todayStr(), {client_id:s.client_id, video_number:s.video_number, title:s.title, editor_id:c && c.editor_id}); },
+  'cal-prev':() => { S.cal.m--; if(S.cal.m < 0){ S.cal.m = 11; S.cal.y--; } render(); },
+  'cal-next':() => { S.cal.m++; if(S.cal.m > 11){ S.cal.m = 0; S.cal.y++; } render(); },
+  'cal-today':() => { const n = new Date(); S.cal.y = n.getFullYear(); S.cal.m = n.getMonth(); render(); },
+  'cal-new':() => itemForm(null, todayStr()),
+  'cal-day':(t, e) => { if(e.target.closest('.pill')) return; if(canManage()) itemForm(null, t.dataset.d); },
+  'cal-item':(t) => itemForm(S.items.find(x => x.id === t.dataset.id)),
+  overlay:(t, e) => { if(e.target === t) closeModal(); }
+};
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if(!t) return;
+  const fn = H[t.dataset.act]; if(!fn) return;
+  if(t.dataset.act === 'cal-day' && e.target.closest('.pill')) return;
+  fn(t, e);
+});
+document.addEventListener('change', e => {
+  const t = e.target.closest('[data-change]'); if(!t) return;
+  const k = t.dataset.change, v = t.value;
+  if(k === 'client-filter') S.clientFilter = v;
+  else if(k === 'script-client') S.scriptClient = v;
+  else if(k === 'cal-month') S.cal.m = +v;
+  else if(k === 'cal-year') S.cal.y = +v;
+  else if(k === 'cal-editor') S.cal.editor = v;
+  render();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('#modal-root').innerHTML) closeModal(); });
+boot();
+</script>
+</body>
+</html>
