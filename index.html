@@ -123,6 +123,18 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .sc-meta{font-size:12px;color:var(--muted);margin-top:12px}
 .sc-a{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 
+/* portal del cliente */
+.portal{max-width:980px;margin:0 auto;padding:0 20px 80px}
+.portal .ptop{display:flex;align-items:center;gap:12px;padding:18px 0}
+.portal .hero{text-align:center;padding:34px 16px 30px;border-radius:20px;margin-bottom:22px;background:linear-gradient(135deg,var(--panel) 0%,var(--panel) 45%,rgba(255,75,0,.28) 100%);border:1px solid var(--line)}
+.portal .hero .kick{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.portal .hero .em{font-size:52px;line-height:1;margin:14px 0 6px}
+.portal .hero h1{font-size:44px}
+.portal .hero p{max-width:560px;margin:10px auto 0;color:var(--muted)}
+.portal .cp-tabs div{cursor:pointer}
+.vbox{text-align:center;padding:40px 20px}
+.vbox p{color:var(--muted);margin:0 0 18px}
+
 /* calendar */
 .cal-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .cal-head h3{font-size:34px;min-width:230px;text-transform:capitalize}
@@ -240,8 +252,12 @@ const ERR_TXT = {
   pin_incorrecto:'PIN incorrecto', demasiados_intentos:'Demasiados intentos. Espera unos minutos.',
   pin_invalido:'El PIN debe tener exactamente 4 dígitos', pin_en_uso:'Ese PIN ya lo usa otra persona',
   sin_permiso:'No tienes permiso para hacer esto', nombre_requerido:'Escribe un nombre',
-  ultimo_director:'No puedes eliminar al último usuario de Dirección', ya_configurado:'El CRM ya tiene usuarios'
+  ultimo_director:'No puedes eliminar al último usuario de Dirección', ya_configurado:'El CRM ya tiene usuarios',
+  link_invalido:'Este link ya no es válido. Pide uno nuevo a Ikonico Studio.', folio_requerido:'Escribe el número de video',
+  no_existe:'Ese guion ya no existe'
 };
+const PORTAL_KEY = (() => { try{ return new URLSearchParams(location.search).get('cliente') || ''; }catch(e){ return ''; } })();
+const portalUrl = tok => location.origin + location.pathname + '?cliente=' + encodeURIComponent(tok);
 const errMsg = c => ERR_TXT[c] || 'Algo salió mal. Intenta de nuevo.';
 
 /* ====== API ====== */
@@ -297,6 +313,7 @@ async function loadAll(){
 /* ====== Sesión ====== */
 async function boot(){
   applyPrefs();
+  if(PORTAL_KEY) return loadPortal();
   if(S.token){
     try{ S.me = await rpc('crm_me', {p_token:S.token}); await loadAll(); S.loading = false; defaultView(); render(); return; }
     catch(e){ S.token = ''; store.del('ikonico_token'); }
@@ -328,6 +345,7 @@ function logoImgs(){ return `<img class="logo" src="logo.png" alt="Ikonico Studi
 function render(){
   const root = $('#root');
   if(S.loading){ root.innerHTML = `<div class="loading">Cargando…</div>`; return; }
+  if(PORTAL_KEY){ root.innerHTML = portalView(); return; }
   if(!S.me){ root.innerHTML = loginView(); bindLogin(); return; }
   const tabs = [];
   if(isAdmin()) tabs.push(['team','Team']);
@@ -394,7 +412,7 @@ async function pinKey(k){
   }
 }
 document.addEventListener('keydown', e => {
-  if(S.me || S.needBoot || S.loading) return;
+  if(PORTAL_KEY || S.me || S.needBoot || S.loading) return;
   if(/^[0-9]$/.test(e.key)) pinKey(e.key); else if(e.key === 'Backspace') pinKey('⌫');
 });
 
@@ -510,6 +528,11 @@ function clientPage(){
           ${isAdmin() ? `<button class="btn danger small" data-act="script-del" data-id="${s.id}">Eliminar</button>` : ''}</div>` : ''}</div>` : ''}
     </div>`;
   }).join('');
+  const pUrl = c.portal_token ? portalUrl(c.portal_token) : '';
+  const linkBox = canManage() ? `<div class="cbox"><h4>Link para el cliente</h4>
+    <p>El cliente puede ver, crear y editar sus guiones desde aquí y abrir su carpeta de Frame. No puede cambiar el estado ni borrar.</p>
+    ${pUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(pUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(pUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(pUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Ver como cliente</a><button class="btn sec small" data-act="portal-gen" data-id="${c.id}" data-regen="1" title="El link anterior dejará de funcionar">↻ Link nuevo</button></div>`
+      : `<div class="linkrow"><button class="btn small" data-act="portal-gen" data-id="${c.id}">🔗 Generar link para el cliente</button></div>`}</div>` : '';
   const clientBox = canManage() ? `<div class="cbox"><h4>Carpeta de Frame para el cliente</h4>
     <p>Es distinta a la de los editores. Es la que verá el cliente en su portal.</p>
     ${clUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(clUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(clUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(clUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Abrir</a></div>`
@@ -522,7 +545,7 @@ function clientPage(){
       ${isAdmin() ? `<button class="btn sec small" data-act="client-edit" data-id="${c.id}">✎ Editar</button>` : ''}
     </div>
     <div class="cp-tabs"><div class="on">Guiones</div></div>
-    ${clientBox}
+    ${linkBox}${clientBox}
     <div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'}</span><div class="spacer"></div>
       ${canManage() ? `<button class="btn" data-act="script-new">+ Nuevo guion</button>` : ''}</div>
     ${list.length ? items : `<div class="empty"><h3>Sin guiones todavía</h3>${canManage() ? 'Crea el primero: número de video y qué quieres exactamente en él, para que el editor lo entienda.' : 'Aquí verás las indicaciones de cada video.'}</div>`}`;
@@ -600,8 +623,7 @@ function scriptsView(){
     : `<div class="empty"><h3>No hay clientes por aquí</h3>${canManage() ? 'Primero da de alta un cliente.' : 'Cuando te asignen un cliente, sus guiones aparecerán aquí.'}</div>`}`;
 }
 function nextFolio(clientId){
-  const nums = S.scripts.filter(s => s.client_id === clientId).map(s => parseInt(s.video_number,10)).filter(n => !isNaN(n));
-  return String((nums.length ? Math.max(...nums) : 0) + 1);
+  return suggestFolio(S.scripts.filter(s => s.client_id === clientId));
 }
 function scriptForm(s){
   s = s || {}; const editing = !!s.id; const ro = !canManage();
@@ -722,6 +744,70 @@ function itemForm(it, presetDate, preset){
   } : null);
 }
 
+/* ---- Portal del cliente (link público, sin PIN) ---- */
+const P = {client:null, scripts:[], tab:'guiones', open:null, err:''};
+async function loadPortal(){
+  try{
+    const r = await rpc('portal_get', {p_key:PORTAL_KEY});
+    if(r && r.error) P.err = errMsg(r.error); else { P.client = r.client; P.scripts = r.scripts || []; }
+  }catch(e){ P.err = e.message; }
+  if(P.client) document.title = P.client.name + ' · Ikonico Studio';
+  S.loading = false; render();
+}
+const byFolio = (a,b) => String(a.video_number).localeCompare(String(b.video_number), undefined, {numeric:true});
+function suggestFolio(list){
+  const last = [...list].sort(byFolio).pop(); if(!last) return '1';
+  const m = /^(.*?)(\d+)$/.exec(String(last.video_number).trim());
+  return m ? m[1] + (+m[2] + 1) : String(list.length + 1);
+}
+function portalView(){
+  const top = `<div class="ptop">${logoImgs()}<div class="spacer"></div><button class="ghost" data-act="theme" title="Cambiar tema">${S.theme==='dark'?'☀︎ Claro':'☾ Oscuro'}</button></div>`;
+  if(!P.client) return `<div class="portal">${top}<div class="empty"><h3>No encontramos tu espacio</h3>${esc(P.err || 'Revisa el link que te compartieron.')}</div></div>`;
+  const c = P.client, url = safeUrl(c.client_folder_link), list = [...P.scripts].sort(byFolio);
+  const items = list.map(s => {
+    const open = P.open === s.id, slug = stSlug(s.status);
+    return `<div class="sc st-${slug} ${open?'open':''}">
+      <div class="sc-h" data-act="pt-toggle" data-id="${s.id}"><b>${esc(s.video_number)} — ${esc(s.title || 'Sin título')}</b><span class="st ${slug}">${esc(s.status)}</span><span class="car">▾</span></div>
+      ${open ? `<div class="sc-b"><div class="txt">${esc(s.content || 'Sin texto todavía.')}</div>
+        <div class="sc-a"><button class="btn sec small" data-act="pt-edit" data-id="${s.id}">✎ Editar guion</button></div></div>` : ''}
+    </div>`;
+  }).join('');
+  const body = P.tab === 'videos'
+    ? `<div class="cbox vbox">${url ? `<p>Aquí están tus videos, listos para revisar y descargar.</p><a class="btn" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">🎬 Abrir mi carpeta en ${linkLabel(url)}</a>` : `<p>Tu carpeta de videos todavía no está lista. En cuanto la tengamos, aparecerá aquí.</p>`}</div>`
+    : `<div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'} · Ikonico Studio actualiza el estado de cada uno</span><div class="spacer"></div>
+        <button class="btn" data-act="pt-new">+ Nuevo guion</button></div>
+      ${list.length ? items : `<div class="empty"><h3>Aún no hay guiones</h3>Escribe el primero con “Nuevo guion”: el número de video y lo que quieres decir en él.</div>`}`;
+  return `<div class="portal">${top}
+    <div class="hero"><div class="kick">Ikonico Studio</div><div class="em">${esc(c.emoji || '🎬')}</div><h1>Hola, ${esc(c.name)}</h1>
+      <p>Gracias por tu confianza. Este es tu espacio: aquí puedes ver y editar tus guiones y abrir la carpeta con tus videos.</p></div>
+    <div class="cp-tabs"><div class="${P.tab==='guiones'?'on':''}" data-act="pt-tab" data-v="guiones">📄 Guiones</div><div class="${P.tab==='videos'?'on':''}" data-act="pt-tab" data-v="videos">🎬 Tus videos</div></div>
+    ${body}</div>`;
+}
+function portalForm(s){
+  s = s || {}; const editing = !!s.id;
+  const body = `<div class="f"><label>Número de video</label><input type="text" name="video_number" required maxlength="20" value="${esc(s.video_number || suggestFolio(P.scripts))}"></div>
+  <div class="f"><label>Título del video</label><input type="text" name="title" maxlength="300" value="${esc(s.title||'')}" placeholder="Ej. 3 tips para emprender"></div>
+  <div class="f"><label>Guion</label><textarea name="content" rows="14" placeholder="Lo que quieres decir, ideas de tomas, textos en pantalla…">${esc(s.content||'')}</textarea>
+    ${editing ? `<div class="hint">Estado actual: ${esc(s.status)}. El estado lo actualiza Ikonico Studio.</div>` : ''}</div>`;
+  openModal(editing ? 'Editar guion' : 'Nuevo guion', body, async fd => {
+    const row = {video_number:fd.get('video_number').trim(), title:fd.get('title'), content:fd.get('content')};
+    if(s.id) row.id = s.id;
+    const r = await rpc('portal_save_script', {p_key:PORTAL_KEY, p_row:row});
+    if(r && r.error) throw new Error(errMsg(r.error));
+    const i = P.scripts.findIndex(x => x.id === r.id); if(i >= 0) P.scripts[i] = r; else P.scripts.push(r);
+    P.open = r.id; render(); toast('Guion guardado');
+  });
+}
+async function genPortalLink(id, regen){
+  if(regen && !confirm('¿Generar un link nuevo? El link anterior dejará de funcionar.')) return;
+  try{
+    const r = await rpc('crm_client_link', {p_token:T(), p_client_id:id, p_regen:!!regen});
+    if(r && r.error){ toast(errMsg(r.error)); return; }
+    const c = client(id); if(c) c.portal_token = r.portal_token;
+    render(); toast(regen ? 'Link nuevo generado' : 'Link generado');
+  }catch(e){ toast(e.message); }
+}
+
 /* ====== Modal ====== */
 function closeModal(){ $('#modal-root').innerHTML = ''; }
 function openModal(title, body, onSubmit, onMount, onDelete){
@@ -770,6 +856,11 @@ const H = {
   'client-back':() => { S.view = S.prevView && S.prevView !== 'client' ? S.prevView : (canManage() ? 'clients' : 'calendar'); S.openScript = null; render(); window.scrollTo(0, 0); },
   'sc-toggle':(t) => { S.openScript = S.openScript === t.dataset.id ? null : t.dataset.id; render(); },
   copy:(t) => { const v = t.dataset.v; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast('Link copiado'), () => { prompt('Copia el link:', v); }); },
+  'portal-gen':(t) => genPortalLink(t.dataset.id, !!t.dataset.regen),
+  'pt-tab':(t) => { P.tab = t.dataset.v; render(); },
+  'pt-toggle':(t) => { P.open = P.open === t.dataset.id ? null : t.dataset.id; render(); },
+  'pt-new':() => portalForm(),
+  'pt-edit':(t) => portalForm(P.scripts.find(x => x.id === t.dataset.id)),
   'script-new':() => scriptForm(),
   'script-edit':(t) => scriptForm(S.scripts.find(x => x.id === t.dataset.id)),
   'script-del':(t) => confirmDelete('scripts', t.dataset.id, 'este guion'),
