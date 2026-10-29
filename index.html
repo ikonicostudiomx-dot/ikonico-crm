@@ -295,21 +295,17 @@ body.resizing,body.resizing *{cursor:ew-resize!important;user-select:none}
 .qcat-row span{flex:1}
 @media(max-width:1100px){ .qwrap{grid-template-columns:1fr} .qprev{position:static} }
 
-/* cotizaciones: hoja A4 (igual en vista previa y en el PDF) */
+/* cotizaciones: hoja tamaño Carta; las páginas se arman en JS (igual en vista previa y en el PDF) */
 .qs{--qt:"Times New Roman",Times,"Tinos",Georgia,serif;--qline:rgba(240,231,220,.16);--qmuted:rgba(240,231,220,.62);--qbody:rgba(255,255,255,.84);--qrule:rgba(240,231,220,.85);
-  width:210mm;min-height:297mm;flex:none;background:#121819;color:#fff;font-family:"Times New Roman",Times,"Tinos",Georgia,serif;font-size:10.5pt;line-height:1.4;display:flex;flex-direction:column;position:relative;text-align:left;
-  box-shadow:0 10px 40px rgba(0,0,0,.35);-webkit-print-color-adjust:exact;print-color-adjust:exact;
-  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(297mm - 1px),rgba(255,75,0,.45) calc(297mm - 1px),rgba(255,75,0,.45) 297mm)}
+  flex:none;display:flex;flex-direction:column;gap:8mm;color:#fff;font-family:var(--qt);font-size:10.5pt;line-height:1.4;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.qs .qpage{width:215.9mm;height:279.4mm;background:#121819;position:relative;overflow:hidden;padding-top:12mm;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.qs .q-blk{display:flow-root}
 .qs table{min-width:0;width:100%;border-collapse:collapse}
 .qs th,.qs td{padding:0;border:0;font-size:inherit;letter-spacing:normal;text-transform:none;color:inherit;vertical-align:top}
-.qs .q-sptop{height:10mm}
-.qs .q-spbot{height:24mm}
-.qs table.q-lay > tfoot{display:none}
 .qs .q-body{padding:0 14mm}
 .qs .q-head{display:grid;grid-template-columns:86mm 1fr;gap:6mm;align-items:stretch}
-.qs .q-brand{position:relative;overflow:hidden;background:#1c2526;border:.6pt solid rgba(240,231,220,.1);border-radius:3mm;padding:9mm;display:flex;align-items:center;min-height:40mm}
-.qs .q-brand::after{content:"";position:absolute;right:-18mm;bottom:-22mm;width:52mm;height:52mm;border-radius:50%;background:radial-gradient(circle,rgba(177,216,225,.55),rgba(177,216,225,0) 68%)}
-.qs .q-brand img{display:block;width:62mm;height:auto;position:relative;z-index:1}
+.qs .q-brand{background:linear-gradient(140deg,#1c2526 0%,#1c2526 52%,#33505a 125%);border:.6pt solid rgba(240,231,220,.1);border-radius:3mm;padding:9mm;display:flex;align-items:center;min-height:40mm}
+.qs .q-brand img{display:block;width:62mm;height:auto}
 .qs .q-title{display:flex;flex-direction:column;justify-content:space-between;padding:1mm 0}
 .qs .q-title h1{margin:0;font-family:var(--qt);font-weight:400;font-size:32pt;line-height:1;letter-spacing:.01em;color:#fff}
 .qs .q-title h1 i{font-style:normal;color:#ff4b00}
@@ -317,59 +313,71 @@ body.resizing,body.resizing *{cursor:ew-resize!important;user-select:none}
 .qs .q-meta div{display:flex;justify-content:space-between;gap:4mm;padding:1.6mm 0;border-bottom:.5pt solid var(--qline);font-size:9.5pt}
 .qs .q-meta dt{color:var(--qmuted);letter-spacing:.08em;text-transform:uppercase;font-size:7.5pt;align-self:center}
 .qs .q-meta dd{margin:0;font-weight:600;text-align:right}
-.qs .q-meta .q-fol dd{font-family:var(--qt);font-size:12pt;font-weight:700;letter-spacing:.02em}
+.qs .q-meta .q-fol dd{font-size:12pt;font-weight:700;letter-spacing:.02em}
 .qs .q-client{margin-top:7mm;border-radius:3mm;padding:5mm 6mm;display:grid;grid-template-columns:1.3fr 1fr;gap:6mm;background:linear-gradient(115deg,#24383d 0%,#1d2a2e 45%,#1b2126 100%)}
 .qs .q-lbl{font-size:7pt;letter-spacing:.18em;text-transform:uppercase;color:var(--qmuted);font-weight:600;margin-bottom:1.2mm}
-.qs .q-name{font-family:var(--qt);font-size:16pt;line-height:1.15}
+.qs .q-name{font-size:16pt;line-height:1.15}
 .qs .q-contact,.qs .q-when{margin-top:1.5mm;font-size:9pt;color:var(--qbody)}
 .qs .q-contact span + span::before{content:"·";margin:0 1.6mm;color:var(--qmuted)}
-.qs .q-proj{font-family:var(--qt);font-style:italic;font-size:11pt;line-height:1.25}
+.qs .q-proj{font-style:italic;font-size:11pt;line-height:1.25}
 .qs .q-intro{margin:6mm 0 0;font-size:10pt;color:var(--qbody)}
 .qs table.q-items{margin-top:6mm}
-.qs .q-items th{font-family:var(--qt);font-weight:700;font-size:7.5pt;letter-spacing:.2em;text-transform:uppercase;text-align:left;padding:0 0 2.2mm;border-bottom:1.4pt solid var(--qrule);color:#fff}
+.qs .q-body > .q-blk:first-child table.q-items{margin-top:0}
+.qs .q-items th{font-weight:700;font-size:7.5pt;letter-spacing:.2em;text-transform:uppercase;text-align:left;padding:0 0 2.2mm;border-bottom:1.4pt solid var(--qrule);color:#fff}
 .qs .q-items .r{text-align:right}
 .qs .q-items .c{text-align:center}
 .qs .q-items td{padding:4mm 0;border-bottom:.5pt solid var(--qline)}
-.qs .q-items tr{break-inside:avoid;page-break-inside:avoid}
-.qs .q-items td.n{width:9mm;font-family:var(--qt);color:#ff4b00;font-size:9pt;padding-top:4.4mm}
+.qs .q-items td.n{width:9mm;color:#ff4b00;font-size:9pt;padding-top:4.4mm}
 .qs .q-items td.qty{width:14mm}
 .qs .q-items td.pu{width:26mm;white-space:nowrap}
-.qs .q-items td.imp{width:30mm;font-family:var(--qt);font-weight:700;font-size:10.5pt;white-space:nowrap}
-.qs .q-it{font-family:var(--qt);font-weight:700;font-size:11.5pt;line-height:1.25}
+.qs .q-items td.imp{width:30mm;font-weight:700;font-size:10.5pt;white-space:nowrap}
+.qs .q-it{font-weight:700;font-size:11.5pt;line-height:1.25}
 .qs .q-items ul{margin:1.6mm 0 0;padding-left:4.2mm;color:var(--qbody);font-size:9.3pt}
 .qs .q-items li{margin:.4mm 0}
 .qs .q-items li::marker{color:var(--qmuted)}
 .qs .q-txt{margin-top:1.4mm;color:var(--qbody);font-size:9.3pt}
-.qs .q-sum{display:grid;grid-template-columns:1fr 72mm;gap:8mm;margin-top:6mm;break-inside:avoid;page-break-inside:avoid}
+.qs .q-sum{display:grid;grid-template-columns:1fr 72mm;gap:8mm;margin-top:6mm}
 .qs .q-notes,.qs .q-pay{font-size:9pt;color:var(--qbody);white-space:pre-line}
 .qs .q-totals div{display:flex;justify-content:space-between;padding:1.4mm 0;font-size:9.8pt;border-bottom:.5pt solid var(--qline)}
 .qs .q-totals div span:first-child{color:var(--qmuted)}
 .qs .q-totals .q-grand{margin-top:2mm;border:0;border-radius:2.5mm;background:#f0e7dc;color:#121819;padding:3.4mm 4.5mm;align-items:baseline}
-.qs .q-totals .q-grand span:first-child{color:#121819;font-family:var(--qt);letter-spacing:.2em;font-size:8.5pt;text-transform:uppercase}
-.qs .q-totals .q-grand span:last-child{font-family:var(--qt);font-size:16pt;font-weight:700}
+.qs .q-totals .q-grand span:first-child{color:#121819;letter-spacing:.2em;font-size:8.5pt;text-transform:uppercase}
+.qs .q-totals .q-grand span:last-child{font-size:16pt;font-weight:700}
 .qs .q-words{margin-top:2mm;font-size:8pt;color:var(--qmuted);font-style:italic;text-align:right}
-.qs .q-cond{margin-top:7mm;display:grid;grid-template-columns:1fr 1fr;gap:8mm;break-inside:avoid;page-break-inside:avoid;padding-top:4mm;border-top:1.4pt solid var(--qrule)}
+.qs .q-cond{margin-top:7mm;display:grid;grid-template-columns:1fr 1fr;gap:8mm;padding-top:4mm;border-top:1.4pt solid var(--qrule)}
 .qs .q-cond.single{grid-template-columns:1fr}
 .qs .q-cond ul{margin:0;padding-left:4mm;font-size:8.8pt;color:var(--qbody)}
 .qs .q-cond li{margin:.6mm 0}
 .qs .q-cond li::marker{color:#ff4b00}
-.qs .q-sign{margin-top:12mm;display:grid;grid-template-columns:1.4fr 1fr;gap:12mm;break-inside:avoid;page-break-inside:avoid}
+.qs .q-sign{margin-top:12mm;display:grid;grid-template-columns:1.4fr 1fr;gap:12mm}
 .qs .q-sign div{border-top:.8pt solid var(--qrule);padding-top:1.6mm;font-size:8pt;color:var(--qmuted);letter-spacing:.06em}
-.qs .q-foot{margin-top:auto;background:#0b0f10;border-top:.6pt solid rgba(240,231,220,.12);color:#fff;height:16mm;display:flex;align-items:center;justify-content:space-between;padding:0 14mm;font-size:9.5pt;position:relative;overflow:hidden}
+.qs .q-foot{position:absolute;left:0;right:0;bottom:0;background:#0b0f10;border-top:.6pt solid rgba(240,231,220,.12);color:#fff;height:16mm;display:flex;align-items:center;justify-content:space-between;padding:0 14mm;font-size:9.5pt;overflow:hidden}
 .qs .q-foot::before{content:"";position:absolute;left:0;top:0;height:1mm;width:22mm;background:#ff4b00}
 .qs .q-foot span{display:flex;align-items:center;gap:2.2mm}
 .qs .q-foot svg{width:4.2mm;height:4.2mm;flex:none}
-.qs .q-tail{height:10mm}
-#print-root{display:none}
+.qs .q-foot .q-pg{color:var(--qmuted);font-size:8.5pt}
+/* modo compacto: se usa solo si así la cotización cabe en una hoja */
+.qs .qpage.compact .q-brand{min-height:34mm;padding:7mm}
+.qs .qpage.compact .q-client{margin-top:5mm;padding:4mm 5mm}
+.qs .qpage.compact .q-intro{margin-top:4mm}
+.qs .qpage.compact table.q-items{margin-top:4mm}
+.qs .qpage.compact .q-items td{padding:2.6mm 0}
+.qs .qpage.compact .q-items td.n{padding-top:3mm}
+.qs .qpage.compact .q-items ul{margin-top:1mm;font-size:9pt}
+.qs .qpage.compact .q-items li{margin:.1mm 0}
+.qs .qpage.compact .q-sum{margin-top:4mm}
+.qs .qpage.compact .q-cond{margin-top:5mm;padding-top:3mm}
+.qs .qpage.compact .q-sign{margin-top:9mm}
+#print-root,#qmeasure{display:none}
+#qmeasure.on{display:flex;position:absolute;left:-99999px;top:0;visibility:hidden}
 @media print{
-  @page{size:A4;margin:0}
-  html.pq,html.pq body{background:#121819!important;min-height:0}
+  @page{size:letter;margin:0}
+  html.pq,html.pq body{background:#121819!important;margin:0;min-height:0}
   html.pq body > *:not(#print-root){display:none!important}
   html.pq #print-root{display:block}
-  html.pq .qs{zoom:1!important;box-shadow:none;min-height:0;background-image:none;display:block}
-  html.pq .qs table.q-lay > tfoot{display:table-footer-group}
-  html.pq .qs .q-foot{position:fixed;left:0;right:0;bottom:0;margin:0;width:210mm}
-  html.pq .qs .q-tail{display:none}
+  html.pq .qs{zoom:1!important;display:block}
+  html.pq .qs .qpage{height:279mm;box-shadow:none;break-after:page;page-break-after:always}
+  html.pq .qs .qpage:last-child{break-after:auto;page-break-after:auto}
 }
 </style>
 </head>
@@ -1326,8 +1334,9 @@ const QICON = {
   mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>',
   ig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r=".6" fill="currentColor"/></svg>'
 };
-/* La hoja A4: la misma para la vista previa y para el PDF */
-function sheetHTML(q){
+/* La hoja (tamaño Carta): la misma para la vista previa y para el PDF.
+   Se arma por bloques y se reparte en páginas midiendo cada bloque; si con el modo compacto cabe en una hoja, se usa ese. */
+function sheetParts(q){
   const d = q.data, s = qset(), t = qTotals(d), c = d.cliente || {};
   const fecha = parseYmd(d.fecha), vence = fecha ? new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + Math.max(0, qnum(d.vigencia))) : null;
   const evento = parseYmd(d.fechaEvento);
@@ -1340,15 +1349,11 @@ function sheetHTML(q){
     return `<tr><td class="n">${pad2(i + 1)}</td><td><div class="q-it">${esc(it.titulo) || '&nbsp;'}</div>${desc}</td>
       ${showQty ? `<td class="qty c">${esc(qnum(it.cantidad))}</td><td class="pu r">${money(it.precio)}</td>` : ''}
       <td class="imp r">${money(qnum(it.cantidad) * qnum(it.precio))}</td></tr>`;
-  }).join('');
+  });
   const conds = ['Precios en moneda nacional, pesos mexicanos (MXN).', d.iva ? 'Precios con I.V.A. (16 %) desglosado.' : 'Precios no incluyen I.V.A.',
     vence ? `Cotización vigente hasta el ${longDate(vence)}.` : ''].filter(Boolean);
   const hasPay = qlines(d.pago).length || qlines(s.bank).length;
-  return `<table class="q-lay">
-    <thead><tr><td><div class="q-sptop"></div></td></tr></thead>
-    <tfoot><tr><td><div class="q-spbot"></div></td></tr></tfoot>
-    <tbody><tr><td><div class="q-body">
-      <header class="q-head">
+  const head = `<header class="q-head">
         <div class="q-brand"><img src="${QLOGO}" alt="IKONICO STUDIO"></div>
         <div class="q-title"><h1>Cotización<i>.</i></h1>
           <dl class="q-meta">
@@ -1365,12 +1370,9 @@ function sheetHTML(q){
           ${d.proyecto ? `<div class="q-proj">${esc(d.proyecto)}</div>` : ''}
           ${evento ? `<div class="q-when">Fecha del evento: ${longDate(evento)}</div>` : ''}` : ''}</div>
       </section>
-      ${d.intro ? `<p class="q-intro">${esc(d.intro)}</p>` : ''}
-      <table class="q-items">
-        <thead><tr><th></th><th>Servicio</th>${showQty ? '<th class="c">Cant.</th><th class="r">P. unitario</th>' : ''}<th class="r">Importe</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <section class="q-sum">
+      ${d.intro ? `<p class="q-intro">${esc(d.intro)}</p>` : ''}`;
+  const thead = `<thead><tr><th></th><th>Servicio</th>${showQty ? '<th class="c">Cant.</th><th class="r">P. unitario</th>' : ''}<th class="r">Importe</th></tr></thead>`;
+  const tail = [`<section class="q-sum">
         <div>${d.notas ? `<div class="q-lbl">Nota</div><div class="q-notes">${esc(d.notas)}</div>` : ''}</div>
         <div><div class="q-totals">
           ${(t.descuento || t.iva) ? `<div><span>Subtotal</span><span>${money(t.subtotal)}</span></div>` : ''}
@@ -1378,19 +1380,56 @@ function sheetHTML(q){
           ${t.iva ? `<div><span>I.V.A. 16 %</span><span>${money(t.iva)}</span></div>` : ''}
           <div class="q-grand"><span>Total</span><span>${money(t.total)}</span></div>
         </div><div class="q-words">Son: ${numeroALetras(t.total)}</div></div>
-      </section>
-      <section class="q-cond ${hasPay ? '' : 'single'}">
+      </section>`,
+      `<section class="q-cond ${hasPay ? '' : 'single'}">
         <div><div class="q-lbl">Condiciones</div><ul>${conds.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
         ${hasPay ? `<div>
           ${qlines(d.pago).length ? `<div class="q-lbl">Forma de pago</div><div class="q-pay">${esc(d.pago)}</div>` : ''}
           ${qlines(s.bank).length ? `<div class="q-lbl" style="margin-top:3mm">Datos para pago</div><div class="q-pay">${esc(s.bank)}</div>` : ''}
         </div>` : ''}
-      </section>
-      ${d.firma ? '<section class="q-sign"><div>NOMBRE Y FIRMA DE ACEPTACIÓN DEL CLIENTE</div><div>FECHA</div></section>' : ''}
-      <div class="q-tail"></div>
-    </div></td></tr></tbody>
-  </table>
-  <footer class="q-foot"><span>${QICON.tel}${esc(s.phone)}</span><span>${QICON.mail}${esc(s.email)}</span><span>${QICON.ig}${esc(s.instagram)}</span></footer>`;
+      </section>`];
+  if(d.firma) tail.push('<section class="q-sign"><div>NOMBRE Y FIRMA DE ACEPTACIÓN DEL CLIENTE</div><div>FECHA</div></section>');
+  const foot = (i, n) => `<footer class="q-foot"><span>${QICON.tel}${esc(s.phone)}</span><span>${QICON.mail}${esc(s.email)}</span><span>${QICON.ig}${esc(s.instagram)}</span>${n > 1 ? `<span class="q-pg">${i + 1} / ${n}</span>` : ''}</footer>`;
+  return {head, thead, rows, tail, foot};
+}
+const Q_PAGE_MM = 279.4, Q_TOP_MM = 12, Q_FOOT_MM = 16, Q_GAP_MM = 8;
+function qLayout(P, compact){
+  let m = $('#qmeasure');
+  if(!m){ m = document.createElement('div'); m.id = 'qmeasure'; m.className = 'qs on'; document.body.appendChild(m); }
+  const cls = compact ? ' compact' : '';
+  m.innerHTML = `<div class="qpage${cls}" style="height:auto"><div class="q-body">
+      <div class="q-blk" data-k="head">${P.head}</div>
+      <div class="q-blk" data-k="th"><table class="q-items">${P.thead}</table></div>
+      <div class="q-blk"><table class="q-items"><tbody>${P.rows.join('')}</tbody></table></div>
+      ${P.tail.map(x => `<div class="q-blk" data-k="tail">${x}</div>`).join('')}
+    </div></div><div data-k="ref" style="height:100mm;flex:none"></div>`;
+  const mm = m.querySelector('[data-k="ref"]').offsetHeight / 100;
+  const avail = (Q_PAGE_MM - Q_TOP_MM - Q_FOOT_MM - Q_GAP_MM) * mm;
+  const headH = m.querySelector('[data-k="head"]').offsetHeight, thH = m.querySelector('[data-k="th"]').offsetHeight;
+  const rowH = [...m.querySelectorAll('tbody tr')].map(r => r.offsetHeight);
+  const tailH = [...m.querySelectorAll('[data-k="tail"]')].map(e => e.offsetHeight);
+  m.innerHTML = '';
+  const pages = [{head:true, rows:[], tail:[]}];
+  let cur = pages[0], used = headH;
+  const next = () => { cur = {head:false, rows:[], tail:[]}; pages.push(cur); used = 0; };
+  rowH.forEach((h, i) => {
+    const need = h + (cur.rows.length ? 0 : thH);
+    if(used + need > avail && used > 0) next();
+    if(!cur.rows.length) used += thH;
+    cur.rows.push(i); used += h;
+  });
+  tailH.forEach((h, i) => { if(used + h > avail && used > 0) next(); cur.tail.push(i); used += h; });
+  return pages;
+}
+function sheetHTML(q){
+  const P = sheetParts(q);
+  let compact = false, pages = qLayout(P, false);
+  if(pages.length > 1){ const c = qLayout(P, true); if(c.length === 1){ pages = c; compact = true; } }
+  return pages.map((pg, i) => `<div class="qpage${compact ? ' compact' : ''}"><div class="q-body">
+      ${pg.head ? `<div class="q-blk">${P.head}</div>` : ''}
+      ${pg.rows.length ? `<div class="q-blk"><table class="q-items">${P.thead}<tbody>${pg.rows.map(r => P.rows[r]).join('')}</tbody></table></div>` : ''}
+      ${pg.tail.map(t => `<div class="q-blk">${P.tail[t]}</div>`).join('')}
+    </div>${P.foot(i, pages.length)}</div>`).join('');
 }
 
 function quotesView(){
@@ -1477,6 +1516,8 @@ function qFit(){
   const w = $('#qprev'), s = $('#qsheet'); if(!w || !s) return;
   s.style.zoom = 1; s.style.zoom = Math.min(1, (w.clientWidth - 32) / s.offsetWidth).toFixed(3);
 }
+/* Las páginas se miden con la letra ya cargada: al terminar de cargar, se vuelve a armar la vista previa */
+if(document.fonts) document.fonts.ready.then(() => { const sh = $('#qsheet'); if(sh && S.q) sh.innerHTML = sheetHTML(S.q); });
 function qChanged(){
   S.qdirty = true;
   const sh = $('#qsheet'); if(sh) sh.innerHTML = sheetHTML(S.q);
@@ -1505,7 +1546,8 @@ async function saveQuoteSettings(next){
   if(r && r.error) throw new Error(r.error);
   S.qset = r;
 }
-function printQuote(q){
+async function printQuote(q){
+  if(document.fonts) await document.fonts.ready;
   let pr = $('#print-root'); if(!pr){ pr = document.createElement('div'); pr.id = 'print-root'; document.body.appendChild(pr); }
   pr.innerHTML = `<div class="qs">${sheetHTML(q)}</div>`;
   const zoom = document.body.style.zoom, title = document.title;
