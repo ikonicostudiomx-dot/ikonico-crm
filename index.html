@@ -80,7 +80,7 @@ tr:last-child td{border-bottom:0}
 .empty{border:1px dashed var(--line);border-radius:16px;padding:46px 20px;text-align:center;color:var(--muted)}
 .empty h3{font-size:28px;color:var(--text);margin-bottom:6px}
 .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
-select,input[type=text],input[type=email],input[type=number],input[type=date],input[type=tel],input[type=password],textarea{
+select,input[type=text],input[type=url],input[type=email],input[type=number],input[type=date],input[type=tel],input[type=password],textarea{
   background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;outline:none}
 select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .toolbar select{width:auto;min-width:200px}
@@ -122,6 +122,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .sc-b .txt{white-space:pre-wrap;padding-top:14px;line-height:1.55}
 .sc-meta{font-size:12px;color:var(--muted);margin-top:12px}
 .sc-a{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.sc-ins{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 
 /* portal del cliente */
 .portal{max-width:980px;margin:0 auto;padding:0 20px 80px}
@@ -734,7 +735,7 @@ function clientPage(){
     const calTxt = cal.map(i => { const e = member(i.editor_id); return `${fmtDay(i.start_date)}${i.end_date && i.end_date !== i.start_date ? ' – ' + fmtDay(i.end_date) : ''} · ${esc(e ? e.name : 'sin responsable')} · ${i.done ? 'listo' : i.progress + '%'}`; }).join('<br>');
     return `<div class="sc st-${slug} ${open?'open':''}" id="sc-${s.id}">
       <div class="sc-h" data-act="sc-toggle" data-id="${s.id}"><b>${esc(s.video_number)} — ${esc(s.title || 'Sin título')}</b><span class="st ${slug}">${esc(s.status)}</span><span class="car">▾</span></div>
-      ${open ? `<div class="sc-b"><div class="txt">${esc(s.content || 'Sin indicaciones todavía.')}</div>
+      ${open ? `<div class="sc-b"><div class="txt">${esc(s.content || 'Sin indicaciones todavía.')}</div>${inspoLinks(s)}
         <div class="sc-meta">${cal.length ? '📅 En calendario: ' + calTxt : 'Todavía no está en el calendario de edición.'}</div>
         ${canManage() ? `<div class="sc-a"><button class="btn sec small" data-act="script-edit" data-id="${s.id}">Editar</button>
           <button class="btn sec small" data-act="script-sched" data-id="${s.id}">Programar</button>
@@ -885,7 +886,7 @@ function scriptsView(){
     .sort((a,b) => String(a.video_number).localeCompare(String(b.video_number), undefined, {numeric:true}));
   const cards = list.map(s => `<div class="script">
     <div class="folio">#${esc(s.video_number)}</div>
-    <div class="body"><h4>${esc(s.title || 'Sin título')}</h4><div class="txt">${esc(s.content || 'Sin indicaciones todavía.')}</div></div>
+    <div class="body"><h4>${esc(s.title || 'Sin título')}</h4><div class="txt">${esc(s.content || 'Sin indicaciones todavía.')}</div>${inspoLinks(s)}</div>
     <div class="side"><span class="badge ${s.status==='Listo'?'ok':''}">${esc(s.status)}</span>
       <button class="btn sec small" data-act="script-edit" data-id="${s.id}">${canManage()?'Editar':'Ver'}</button>
       ${canManage() ? `<button class="btn sec small" data-act="script-sched" data-id="${s.id}">Programar</button>` : ''}
@@ -900,15 +901,31 @@ function scriptsView(){
 function nextFolio(clientId){
   return suggestFolio(S.scripts.filter(s => s.client_id === clientId));
 }
+/* Videos de inspiración: hasta 3 links por guion (los captura el cliente o el equipo) */
+const inspoFields = links => [0,1,2].map(i => `<div class="f"><label>Video inspiración ${i+1}</label>
+  <input type="url" name="inspo${i}" maxlength="1000" value="${esc((links || [])[i] || '')}" placeholder="https://… (Instagram, TikTok, YouTube…)"></div>`).join('');
+function readInspo(fd){
+  return [0,1,2].map(i => {
+    const v = (fd.get('inspo' + i) || '').trim();
+    if(v && !safeUrl(v)) throw new Error(`El link de Video inspiración ${i+1} debe empezar con https://`);
+    return v;
+  }).filter(Boolean);
+}
+function inspoLinks(s){
+  const ls = (s.inspiration_links || []).map(safeUrl).filter(Boolean);
+  return ls.length ? `<div class="sc-ins">${ls.map((u, i) => `<a class="btn sec small" href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none">🔗 Video inspiración ${i+1}</a>`).join('')}</div>` : '';
+}
 function scriptForm(s){
   s = s || {}; const editing = !!s.id; const ro = !canManage();
   const body = `<input type="hidden" name="id" value="${esc(s.id||'')}">
   <div class="row2"><div class="f"><label>Número de video / folio</label><input type="text" name="video_number" required value="${esc(s.video_number || nextFolio(S.scriptClient))}" ${ro?'disabled':''}></div>
   <div class="f"><label>Estado</label><select name="status" ${ro?'disabled':''}>${['Pendiente','En edición','Listo'].map(x => `<option ${(s.status||'Pendiente')===x?'selected':''}>${x}</option>`).join('')}</select></div></div>
   <div class="f"><label>Título del video</label><input type="text" name="title" value="${esc(s.title||'')}" ${ro?'disabled':''} placeholder="Ej. Tour por las instalaciones"></div>
-  <div class="f"><label>Guion / qué quieres en este video</label><textarea name="content" rows="12" ${ro?'disabled':''} placeholder="Tomas, textos en pantalla, música, duración, referencias…">${esc(s.content||'')}</textarea></div>`;
+  <div class="f"><label>Guion / qué quieres en este video</label><textarea name="content" rows="12" ${ro?'disabled':''} placeholder="Tomas, textos en pantalla, música, duración, referencias…">${esc(s.content||'')}</textarea></div>
+  ${ro ? inspoLinks(s) : inspoFields(s.inspiration_links)}`;
   openModal(editing ? (ro ? 'Guion' : 'Editar guion') : 'Nuevo guion', body, ro ? null : async fd => {
-    const row = {client_id:s.client_id || S.scriptClient, video_number:fd.get('video_number').trim(), title:fd.get('title')||null, content:fd.get('content')||null, status:fd.get('status')};
+    const row = {client_id:s.client_id || S.scriptClient, video_number:fd.get('video_number').trim(), title:fd.get('title')||null, content:fd.get('content')||null, status:fd.get('status'),
+      inspiration_links:readInspo(fd)};
     if(fd.get('id')) row.id = fd.get('id');
     const r = await saveRow('scripts', row);
     if(r && r.error) throw new Error(errMsg(r.error));
@@ -1193,7 +1210,7 @@ function portalView(){
     const open = P.open === s.id, slug = stSlug(s.status);
     return `<div class="sc st-${slug} ${open?'open':''}">
       <div class="sc-h" data-act="pt-toggle" data-id="${s.id}"><b>${esc(s.video_number)} — ${esc(s.title || 'Sin título')}</b><span class="st ${slug}">${esc(s.status)}</span><span class="car">▾</span></div>
-      ${open ? `<div class="sc-b"><div class="txt">${esc(s.content || 'Sin texto todavía.')}</div>
+      ${open ? `<div class="sc-b"><div class="txt">${esc(s.content || 'Sin texto todavía.')}</div>${inspoLinks(s)}
         <div class="sc-a"><button class="btn sec small" data-act="pt-edit" data-id="${s.id}">✎ Editar guion</button></div></div>` : ''}
     </div>`;
   }).join('');
@@ -1241,13 +1258,13 @@ function portalCalendar(){
 }
 function portalForm(s){
   s = s || {}; const editing = !!s.id;
-  const body = `<div class="f"><label>Número de video</label><input type="text" name="video_number" required maxlength="20" value="${esc(s.video_number || suggestFolio(P.scripts))}"></div>
-  <div class="f"><label>Título del video</label><input type="text" name="title" maxlength="300" value="${esc(s.title||'')}" placeholder="Ej. 3 tips para emprender"></div>
-  <div class="f"><label>Guion</label><textarea name="content" rows="14" placeholder="Lo que quieres decir, ideas de tomas, textos en pantalla…">${esc(s.content||'')}</textarea>
-    ${editing ? `<div class="hint">Estado actual: ${esc(s.status)}. El estado lo actualiza Ikonico Studio.</div>` : ''}</div>`;
+  const body = `<div class="f"><label>Título del video</label><input type="text" name="title" maxlength="300" value="${esc(s.title||'')}" placeholder="Ej. 3 tips para emprender"></div>
+  <div class="f"><label>Guion</label><textarea name="content" rows="12" placeholder="Lo que quieres decir, ideas de tomas, textos en pantalla…">${esc(s.content||'')}</textarea>
+    ${editing ? `<div class="hint">Estado actual: ${esc(s.status)}. El estado lo actualiza Ikonico Studio.</div>` : ''}</div>
+  ${inspoFields(s.inspiration_links)}`;
   openModal(editing ? 'Editar guion' : 'Nuevo guion', body, async fd => {
-    const row = {video_number:fd.get('video_number').trim(), title:fd.get('title'), content:fd.get('content')};
-    if(s.id) row.id = s.id;
+    const row = {title:fd.get('title'), content:fd.get('content'), inspiration_links:readInspo(fd)};
+    if(s.id) row.id = s.id; else row.video_number = suggestFolio(P.scripts);
     const r = await rpc('portal_save_script', {p_key:PORTAL_KEY, p_row:row});
     if(r && r.error) throw new Error(errMsg(r.error));
     const i = P.scripts.findIndex(x => x.id === r.id); if(i >= 0) P.scripts[i] = r; else P.scripts.push(r);
