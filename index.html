@@ -123,6 +123,38 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent)}
 .sc-meta{font-size:12px;color:var(--muted);margin-top:12px}
 .sc-a{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 .sc-ins{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+/* subidas de clientes (Drive) */
+.bell{display:inline-block;background:var(--accent);color:#fff;border-radius:20px;padding:0 7px;font-size:11px;font-weight:700;line-height:18px}
+.tab.active .bell{background:#fff;color:var(--accent)}
+.card .nb{color:var(--accent);font-weight:700}
+.drivebox{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.drivebox > div{flex:1;min-width:240px}
+.drivebox.ok{border-left:4px solid var(--ok)}
+.drivebox.warn{border-left:4px solid var(--accent)}
+.uprow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:10px}
+.uprow.new{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.uprow .d{display:flex;flex-direction:column;align-items:center;min-width:44px;line-height:1.1}
+.uprow .d b{font-family:var(--serif);font-size:26px;color:var(--accent);font-weight:400}
+.uprow .d small{color:var(--muted);font-size:11px;text-transform:uppercase}
+.uprow .tx{flex:1;min-width:180px}
+.uprow .tx small{display:block;color:var(--muted)}
+.upbox h4{font-size:12px}
+.drop{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border:2px dashed var(--line);border-radius:14px;padding:28px 16px;cursor:pointer;margin:6px 0 14px;transition:border-color .15s,background .15s}
+.drop:hover,.drop.hover{border-color:var(--accent);background:rgba(255,75,0,.06)}
+.drop.off{opacity:.5;pointer-events:none}
+.drop span{color:var(--muted);font-size:13px}
+.uplist{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.upf{display:grid;grid-template-columns:22px minmax(0,1fr) 70px 120px 64px 26px;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:13px}
+.upf .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.upf .fs,.upf .fst{color:var(--muted);font-size:12px;text-align:right}
+.upf .pb{height:6px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.upf .pb i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.upf.ok .pb i{background:var(--ok)} .upf.ok .fst{color:var(--ok);font-weight:700}
+.upf.error{border-color:#6b3426} .upf.error .fst{color:#ff8a66;font-weight:700}
+.upf .x{border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0}
+.upres{border-radius:10px;padding:12px 14px;margin:10px 0 14px;font-size:14px}
+.upres.ok{background:rgba(95,207,151,.12);color:var(--text)} .upres.warn{background:rgba(255,75,0,.10)}
+@media(max-width:700px){ .upf{grid-template-columns:22px minmax(0,1fr) 60px 26px} .upf .fs,.upf .pb{display:none} }
 
 /* portal del cliente */
 .portal{max-width:980px;margin:0 auto;padding:0 20px 80px}
@@ -431,7 +463,14 @@ const ERR_TXT = {
   sin_permiso:'No tienes permiso para hacer esto', nombre_requerido:'Escribe un nombre',
   ultimo_director:'No puedes eliminar al último usuario de Dirección', ya_configurado:'El CRM ya tiene usuarios',
   link_invalido:'Este link ya no es válido. Pide uno nuevo a Ikonico Studio.', folio_requerido:'Escribe el número de video',
-  no_existe:'Ese guion ya no existe'
+  no_existe:'Ese guion ya no existe',
+  drive_sin_conectar:'La carpeta de Ikonico todavía no está conectada. Avísale a Ikonico Studio.',
+  drive_desconectado:'Se perdió la conexión con Google Drive. Avísale a Ikonico Studio.',
+  falta_config:'Falta terminar de configurar Google Drive en el servidor.',
+  subidas_desactivadas:'La subida de contenido no está activada para esta cuenta.',
+  archivos_invalidos:'Elige entre 1 y 60 archivos por subida.', archivo_muy_grande:'Hay un archivo de más de 20 GB.',
+  carpeta_no_encontrada:'No encontramos la carpeta de Drive del cliente. Revisa el link en “Editar cliente”.',
+  drive_error:'Google Drive no respondió. Intenta de nuevo en un momento.'
 };
 const PORTAL_KEY = (() => { try{ return new URLSearchParams(location.search).get('cliente') || ''; }catch(e){ return ''; } })();
 const GUION_ID = (() => { try{ return new URLSearchParams(location.search).get('guion') || ''; }catch(e){ return ''; } })();
@@ -468,7 +507,7 @@ async function delRow(tbl,id){
 /* ====== Estado ====== */
 const S = {
   token: store.get('ikonico_token',''), me:null, view:'calendar', loading:true, needBoot:false,
-  team:[], clients:[], scripts:[], items:[], events:[], week:[],
+  team:[], clients:[], scripts:[], items:[], events:[], week:[], uploads:[], drive:null,
   quotes:[], qset:null, qready:false, qerr:'', q:null, qdirty:false, qfilter:'todas',
   scriptClient:'', clientId:'', openScript:null, prevView:'', clientTab:'guiones', standalone:false, cal:{y:new Date().getFullYear(), m:new Date().getMonth(), editor:''},
   clientFilter:'activos', pin:'', loginErr:'', theme: store.get('ikonico_theme','dark'), zoom: +store.get('ikonico_zoom','100')
@@ -485,9 +524,11 @@ function applyPrefs(){
 }
 
 async function loadAll(){
-  const [team, clients, scripts, items, events] = await Promise.all(['team_members','clients','scripts','calendar_items','client_events'].map(select).concat(loadWeek()));
+  const [team, clients, scripts, items, events, uploads] = await Promise.all(['team_members','clients','scripts','calendar_items','client_events','client_uploads'].map(select).concat(loadWeek()));
   S.team = team || []; S.clients = clients || []; S.scripts = scripts || []; S.items = items || [];
   S.events = Array.isArray(events) ? events : [];
+  S.uploads = Array.isArray(uploads) ? uploads : [];
+  if(canManage()){ try{ S.drive = await rpc('crm_drive_status', {p_token:T()}); }catch(e){ S.drive = null; } }
   if(isAdmin()) await loadQuotes();
 }
 /* Meta semanal: videos agendados a cada editor esta semana (dom–sáb) contra los terminados */
@@ -516,7 +557,7 @@ async function boot(){
   applyPrefs();
   if(PORTAL_KEY) return loadPortal();
   if(S.token){
-    try{ S.me = await rpc('crm_me', {p_token:S.token}); await loadAll(); S.loading = false; defaultView(); guionRoute(); return; }
+    try{ S.me = await rpc('crm_me', {p_token:S.token}); await loadAll(); S.loading = false; defaultView(); guionRoute(); afterLoadNotices(); return; }
     catch(e){ S.token = ''; store.del('ikonico_token'); }
   }
   try{ S.needBoot = await rpc('crm_bootstrap_needed'); }catch(e){ S.needBoot = false; S.loginErr = 'No pude conectar con la base de datos.'; }
@@ -531,7 +572,35 @@ async function afterAuth(res){
   S.token = res.token; S.me = res.member; store.set('ikonico_token', S.token);
   S.loginErr = ''; S.pin = ''; S.loading = true; render();
   try{ await loadAll(); }catch(e){ toast(e.message); }
-  S.loading = false; defaultView(); guionRoute();
+  S.loading = false; defaultView(); guionRoute(); afterLoadNotices();
+}
+/* Avisos al entrar: resultado de conectar Google Drive (?drive=...) y subidas nuevas de clientes */
+const DRIVE_MSG = (() => { try{ return new URLSearchParams(location.search).get('drive') || ''; }catch(e){ return ''; } })();
+function afterLoadNotices(){
+  if(DRIVE_MSG){
+    history.replaceState(null, '', location.pathname);
+    toast({ok:'✅ Google Drive quedó conectado', cancelado:'Conexión con Google Drive cancelada', vencido:'El permiso tardó demasiado; vuelve a intentarlo', error:'No se pudo conectar Google Drive; vuelve a intentarlo'}[DRIVE_MSG] || 'Google Drive: ' + DRIVE_MSG);
+    if(isAdmin()){ S.view = 'clients'; render(); }
+    return;
+  }
+  const n = unseenUploads().length;
+  if(n && canManage()) toast(`🔔 Tienes ${n} subida${n===1?'':'s'} nueva${n===1?'':'s'} de clientes`);
+}
+const unseenUploads = clientId => S.uploads.filter(u => !u.seen && u.status !== 'subiendo' && (!clientId || u.client_id === clientId));
+const fmtSize = b => { b = +b || 0; return b >= 1024**3 ? (b/1024**3).toFixed(1) + ' GB' : b >= 1024**2 ? Math.round(b/1024**2) + ' MB' : Math.max(1, Math.round(b/1024)) + ' KB'; };
+/* Función del servidor que habla con Google Drive */
+const FN_URL = SB_URL + '/functions/v1/drive';
+async function fnCall(body){
+  let r;
+  try{ r = await fetch(FN_URL, {method:'POST', headers:{'Content-Type':'application/json', apikey:SB_KEY}, body:JSON.stringify(body)}); }
+  catch(e){ throw new Error('Sin conexión. Revisa tu internet.'); }
+  const d = await r.json().catch(() => ({}));
+  if(!r.ok || d.error) throw new Error(errMsg(d.error || ''));
+  return d;
+}
+async function connectDrive(){
+  try{ const r = await fnCall({action:'auth_start', token:T()}); location.href = r.url; }
+  catch(e){ toast(e.message); }
 }
 /* ?guion=<id>: pestaña aparte con la página del cliente y ese guion abierto (el calendario sigue en la otra pestaña) */
 function guionRoute(){
@@ -556,7 +625,8 @@ function render(){
   if(!S.me){ root.innerHTML = loginView(); bindLogin(); return; }
   const tabs = [];
   if(isAdmin()) tabs.push(['team','Team']);
-  if(canManage()) tabs.push(['clients','Clientes']);
+  const nNew = canManage() ? unseenUploads().length : 0;
+  if(canManage()) tabs.push(['clients', 'Clientes' + (nNew ? ` <span class="bell">🔔 ${nNew}</span>` : '')]);
   if(isAdmin()) tabs.push(['quotes','Cotizaciones']);
   if(!canManage()) tabs.push(['scripts','Mis guiones']);
   tabs.push(['calendar','Calendario de edición']);
@@ -710,9 +780,16 @@ function clientsView(){
         <div>Editor: ${ed || 'sin asignar'}</div>
         ${member(c.cm_id) ? `<div>CM: ${esc(member(c.cm_id).name)}</div>` : ''}
         <div>${nScripts} guion${nScripts===1?'':'es'}</div>
+        ${unseenUploads(c.id).length ? `<div class="nb">🔔 ${unseenUploads(c.id).length} subida${unseenUploads(c.id).length===1?'':'s'} nueva${unseenUploads(c.id).length===1?'':'s'}</div>` : ''}
       </div></div>`;
   }).join('');
-  return `<div class="page-head"><h2>Clientes</h2><div class="spacer"></div>
+  const d = S.drive, needsDrive = S.clients.some(c => c.uploads_enabled);
+  const driveBox = isAdmin() && d ? `<div class="cbox drivebox ${d.connected ? 'ok' : 'warn'}"><div>
+      <h4>Google Drive ${d.connected ? '· conectado' : '· sin conectar'}</h4>
+      <p>${d.connected ? `Las subidas de los clientes llegan a la cuenta <b>${esc(d.email || 'de Ikonico')}</b>.`
+        : 'Conéctalo con la cuenta de Google de Ikonico para que los clientes de marca personal puedan subir su contenido.' + (needsDrive ? ' <b>Hay clientes con la subida activada esperando.</b>' : '')}</p></div>
+      <button class="btn ${d.connected ? 'sec ' : ''}small" data-act="drive-connect">${d.connected ? '↻ Reconectar' : '🔗 Conectar Google Drive'}</button></div>` : '';
+  return `${driveBox}<div class="page-head"><h2>Clientes</h2><div class="spacer"></div>
     <select data-change="client-filter" style="width:auto"><option value="activos" ${S.clientFilter==='activos'?'selected':''}>Activos</option><option value="inactivos" ${S.clientFilter==='inactivos'?'selected':''}>Inactivos</option><option value="todos" ${S.clientFilter==='todos'?'selected':''}>Todos</option></select>
     ${isAdmin() ? `<button class="btn" data-act="client-new">+ Nuevo cliente</button>` : ''}</div>
     ${list.length ? `<div class="grid">${cards}</div>` : `<div class="empty"><h3>Aún no hay clientes</h3>Da de alta al primero con “Nuevo cliente”.</div>`}`;
@@ -753,9 +830,18 @@ function clientPage(){
     <p>Es distinta a la de los editores. Es la que verá el cliente en su portal.</p>
     ${clUrl ? `<div class="linkrow"><input type="text" readonly value="${esc(clUrl)}"><button class="btn sec small" data-act="copy" data-v="${esc(clUrl)}">📋 Copiar</button><a class="btn sec small" href="${esc(clUrl)}" target="_blank" rel="noopener" style="text-decoration:none">Abrir</a></div>`
       : `<div class="linkrow"><span class="hint">Aún no está capturada.${isAdmin() ? ' Agrégala con “Editar”.' : ''}</span></div>`}</div>` : '';
-  const hasEv = c.client_type === 'eventos' && canManage(), tab = hasEv ? S.clientTab : 'guiones';
+  const hasEv = c.client_type === 'eventos' && canManage();
+  const ups = S.uploads.filter(u => u.client_id === c.id), hasUp = c.uploads_enabled || ups.length > 0, nNewUp = unseenUploads(c.id).length;
   const nEv = S.events.filter(e => e.client_id === c.id).length;
-  const cpTabs = `<div class="cp-tabs">${hasEv ? `<div class="${tab==='eventos'?'on':''}" data-act="cp-tab" data-v="eventos" style="cursor:pointer">📅 Eventos (${nEv})</div>` : ''}<div class="${tab==='guiones'?'on':''}" ${hasEv ? 'data-act="cp-tab" data-v="guiones" style="cursor:pointer"' : ''}>📄 Guiones</div></div>`;
+  const tabList = [].concat(hasEv ? [['eventos', `📅 Eventos (${nEv})`]] : [], [['guiones', '📄 Guiones']],
+    hasUp ? [['subidas', `📤 Subidas${nNewUp ? ` <span class="bell">🔔 ${nNewUp}</span>` : ups.length ? ` (${ups.length})` : ''}`]] : []);
+  const tab = tabList.find(t => t[0] === S.clientTab) ? S.clientTab : 'guiones';
+  const cpTabs = `<div class="cp-tabs">${tabList.map(([k,l]) => `<div class="${tab===k?'on':''}" ${tabList.length > 1 ? `data-act="cp-tab" data-v="${k}" style="cursor:pointer"` : ''}>${l}</div>`).join('')}</div>`;
+  if(tab === 'subidas') return `<div class="cp-head">
+      ${S.standalone ? `<button class="ghost" data-act="close-tab">✕ Cerrar pestaña</button>` : `<button class="ghost" data-act="client-back">‹ Volver</button>`}
+      <span class="em">${esc(c.emoji||'🎬')}</span><h2>${esc(c.name)}</h2>${chips}<div class="spacer"></div>
+      ${isAdmin() ? `<button class="btn sec small" data-act="client-edit" data-id="${c.id}">✎ Editar</button>` : ''}
+    </div>${cpTabs}${uploadsPanel(c, ups)}`;
   return `<div class="cp-head">
       ${S.standalone ? `<button class="ghost" data-act="close-tab">✕ Cerrar pestaña</button>` : `<button class="ghost" data-act="client-back">‹ Volver</button>`}
       <span class="em">${esc(c.emoji||'🎬')}</span><h2>${esc(c.name)}</h2>${chips}
@@ -768,6 +854,31 @@ function clientPage(){
     <div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'}</span><div class="spacer"></div>
       ${canManage() ? `<button class="btn" data-act="script-new">+ Nuevo guion</button>` : ''}</div>
     ${list.length ? items : `<div class="empty"><h3>Sin guiones todavía</h3>${canManage() ? 'Crea el primero: número de video y qué quieres exactamente en él, para que el editor lo entienda.' : 'Aquí verás las indicaciones de cada video.'}</div>`}`}`;
+}
+/* ---- Subidas del cliente (marca personal): lo que el cliente subió a su Drive desde el portal ---- */
+const UP_ST = {completo:'Completa', parcial:'Incompleta', fallido:'Falló', subiendo:'Subiendo…'};
+function uploadsPanel(c, ups){
+  const fresh = new Set(ups.filter(u => !u.seen && u.status !== 'subiendo').map(u => u.id));
+  if(fresh.size){ // al verlas se marcan como vistas (el aviso “Nuevo” sigue visible en esta vista)
+    rpc('crm_uploads_seen', {p_token:T(), p_client_id:c.id}).then(() => { ups.forEach(u => { if(fresh.has(u.id)) u.seen = true; }); }).catch(() => {});
+  }
+  const driveUrl = safeUrl(c.drive_folder_link);
+  const rows = ups.map(u => {
+    const link = safeUrl(u.folder_link), dt = new Date(u.completed_at || u.created_at);
+    return `<div class="uprow ${fresh.has(u.id) ? 'new' : ''}">
+      <div class="d"><b>${dt.getDate()}</b><small>${MON_SHORT[dt.getMonth()]}</small></div>
+      <div class="tx"><b>${esc(u.month_name)} / ${esc(u.video_name)}</b>
+        <small>${u.files_done}/${u.files_expected} archivo${u.files_expected===1?'':'s'}${u.bytes ? ' · ' + fmtSize(u.bytes) : ''} · ${pad2(dt.getHours())}:${pad2(dt.getMinutes())} h</small></div>
+      ${fresh.has(u.id) ? '<span class="st listo">Nuevo</span>' : ''}
+      <span class="st ${u.status === 'completo' ? '' : 'edicion'}">${UP_ST[u.status] || esc(u.status)}</span>
+      ${link ? `<a class="btn sec small" href="${esc(link)}" target="_blank" rel="noopener" style="text-decoration:none">📁 Abrir carpeta</a>` : ''}
+    </div>`;
+  }).join('');
+  return `<div class="cbox"><h4>Subida de contenido</h4>
+      <p>${c.uploads_enabled ? 'Activada: el cliente ve el botón “Subir contenido” en su portal. Cada subida va a su Drive en MES / NOMBRE DEL VIDEO.'
+        : 'Apagada para este cliente.' + (isAdmin() ? ' Actívala en “Editar”.' : '')}
+      ${driveUrl ? ` <a href="${esc(driveUrl)}" target="_blank" rel="noopener">Abrir su carpeta general</a>` : ''}</p></div>
+    ${rows || `<div class="empty"><h3>Sin subidas todavía</h3>Aquí aparecerá cada vez que el cliente suba fotos o videos.</div>`}`;
 }
 /* ---- Eventos (clientes de graduaciones): fecha, lugar, evento, estado y links de videos y fotos ---- */
 const EV_ST = ['Pendiente','Entregado'];
@@ -824,7 +935,7 @@ function fmtDay(s){ if(!s) return ''; const [y,m,d] = s.split('-').map(Number); 
 function openClient(id, scriptId){
   if(S.view !== 'client') S.prevView = S.view;
   const c = client(id);
-  S.clientTab = c && c.client_type === 'eventos' && !scriptId ? 'eventos' : 'guiones';
+  S.clientTab = scriptId ? 'guiones' : unseenUploads(id).length ? 'subidas' : c && c.client_type === 'eventos' ? 'eventos' : 'guiones';
   S.clientId = id; S.scriptClient = id; S.openScript = scriptId || null; S.view = 'client'; render();
   const el = scriptId && document.getElementById('sc-' + scriptId);
   if(el) el.scrollIntoView({block:'center'}); else window.scrollTo(0, 0);
@@ -852,6 +963,9 @@ function clientForm(c){
   <div class="f"><label>Community manager</label><select name="cm_id">${memberOptions(c.cm_id)}</select></div>
   <div class="f"><label class="chkrow"><input type="checkbox" name="portal_scripts" id="ps" ${(editing ? c.portal_scripts !== false : c.client_type !== 'eventos') ? 'checked' : ''}> Mostrar los guiones en el portal del cliente</label>
     <div class="hint">Si lo apagas, los guiones solo los ven ustedes y los editores; el cliente no los ve en su link.</div></div>
+  <div class="f"><label class="chkrow"><input type="checkbox" name="uploads_enabled" ${c.uploads_enabled ? 'checked' : ''}> Marca personal: el cliente puede subir su contenido (fotos y videos)</label></div>
+  <div class="f"><label>Carpeta de Drive del cliente</label><input type="url" name="drive_folder_link" value="${esc(c.drive_folder_link||'')}" placeholder="https://drive.google.com/drive/folders/…">
+    <div class="hint">La carpeta general del cliente (ej. LULU OLVERA - MARCA PERSONAL). Ahí se crean solas las carpetas MES / NOMBRE DEL VIDEO.</div></div>
   <div class="f"><label>Notas</label><textarea name="notes" rows="3">${esc(c.notes||'')}</textarea></div>`;
   openModal(editing ? 'Editar cliente' : 'Nuevo cliente', body, async fd => {
     const link = (fd.get('folder_link')||'').trim(), clink = (fd.get('client_folder_link')||'').trim();
@@ -860,7 +974,11 @@ function clientForm(c){
       folder_link:link||null, client_folder_link:clink||null, client_type:fd.get('client_type'),
       videos_per_month: fd.get('client_type')==='recurrente' && fd.get('videos_per_month') !== '' ? +fd.get('videos_per_month') : null,
       editor_id:fd.get('editor_id')||null, editor2_id:fd.get('editor2_id')||null, cm_id:fd.get('cm_id')||null, notes:fd.get('notes')||null,
-      portal_scripts: fd.get('portal_scripts') === 'on'};
+      portal_scripts: fd.get('portal_scripts') === 'on',
+      uploads_enabled: fd.get('uploads_enabled') === 'on', drive_folder_link: (fd.get('drive_folder_link') || '').trim() || null};
+    if(row.drive_folder_link && !/^https:\/\/drive\.google\.com\/.*(\/folders\/|[?&]id=)[\w-]{10,}/.test(row.drive_folder_link))
+      throw new Error('El link de Drive debe ser de una carpeta (https://drive.google.com/drive/folders/…)');
+    if(row.uploads_enabled && !row.drive_folder_link) throw new Error('Para activar la subida de contenido, pega el link de la carpeta de Drive del cliente');
     if(fd.get('id')) row.id = fd.get('id');
     const r = await saveRow('clients', row);
     if(r && r.error) throw new Error(errMsg(r.error));
@@ -1216,10 +1334,11 @@ function portalView(){
   }).join('');
   const isEv = c.client_type === 'eventos';
   const showScripts = c.portal_scripts !== false;
-  const ptabs = isEv ? [['calendario','📅 Calendario']].concat(showScripts && list.length ? [['guiones','📄 Guiones']] : [], url ? [['videos','📁 Tu carpeta de ' + linkLabel(url)]] : [])
-    : (showScripts ? [['guiones','📄 Guiones']] : []).concat([['videos','🎬 Tus videos']]);
+  const upTab = c.can_upload ? [['subir','⬆️ Subir contenido']] : [];
+  const ptabs = isEv ? [['calendario','📅 Calendario']].concat(showScripts && list.length ? [['guiones','📄 Guiones']] : [], upTab, url ? [['videos','📁 Tu carpeta de ' + linkLabel(url)]] : [])
+    : (showScripts ? [['guiones','📄 Guiones']] : []).concat(upTab, [['videos','🎬 Tus videos']]);
   if(!ptabs.find(t => t[0] === P.tab)) P.tab = ptabs[0][0];
-  const body = P.tab === 'calendario' ? portalCalendar() : P.tab === 'videos'
+  const body = P.tab === 'calendario' ? portalCalendar() : P.tab === 'subir' ? uploadView() : P.tab === 'videos'
     ? `<div class="cbox vbox">${url ? `<p>Aquí están tus videos, listos para revisar y descargar.</p><a class="btn" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">🎬 Abrir mi carpeta en ${linkLabel(url)}</a>` : `<p>Tu carpeta de videos todavía no está lista. En cuanto la tengamos, aparecerá aquí.</p>`}</div>`
     : `<div class="page-head" style="margin-bottom:12px"><span class="hint" style="margin:0">${list.length} guion${list.length===1?'':'es'} · Ikonico Studio actualiza el estado de cada uno</span><div class="spacer"></div>
         <button class="btn" data-act="pt-new">+ Nuevo guion</button></div>
@@ -1256,6 +1375,81 @@ function portalCalendar(){
     <div class="cal pcal"><div class="dows">${DOW.map(d => `<div class="dow">${d}</div>`).join('')}</div><div class="wk">${cells}</div></div>
     <div class="evlist">${rows || `<div class="empty"><h3>Sin eventos este mes</h3>Usa las flechas para ver otros meses.</div>`}</div>`;
 }
+/* ---- Portal: subir contenido a Drive. Los archivos van directo del navegador a Google Drive ---- */
+const UP = {name:'', files:[], busy:false, result:null, seq:0};
+const MAX_UP_FILES = 60;
+function uploadView(){
+  const pending = UP.files.filter(f => f.state !== 'ok'), n = pending.length;
+  const rows = UP.files.map(f => `<div class="upf ${f.state}" id="upf-${f.id}">
+      <span class="ic">${/^video\//.test(f.file.type) ? '🎬' : /^image\//.test(f.file.type) ? '📷' : '📄'}</span>
+      <span class="fn">${esc(f.file.name)}</span><span class="fs">${fmtSize(f.file.size)}</span>
+      <span class="pb"><i style="width:${f.pct || 0}%"></i></span>
+      <span class="fst">${upLabel(f)}</span>
+      ${!UP.busy && f.state !== 'ok' ? `<button class="x" data-act="up-rm" data-id="${f.id}" title="Quitar">×</button>` : ''}
+    </div>`).join('');
+  const r = UP.result;
+  return `<div class="cbox upbox">
+    <h4>Sube tus fotos y videos</h4>
+    <p>Escribe el nombre del video o del viaje (por ejemplo: <b>Puebla</b>) y elige tus archivos. Se guardan en tu carpeta de Ikonico Studio, dentro del mes en curso.</p>
+    ${r ? `<div class="upres ${r.ok === r.total ? 'ok' : 'warn'}">${r.ok === r.total ? '✅' : '⚠️'} ${r.ok} de ${r.total} archivo${r.total===1?'':'s'} subido${r.total===1?'':'s'} a <b>${esc(r.month)} / ${esc(r.name)}</b>.
+      ${r.ok < r.total ? 'Los que fallaron siguen en la lista: dale “Subir” otra vez para reintentarlos.' : '¡Gracias! Ikonico Studio ya recibió el aviso.'}</div>` : ''}
+    <div class="f"><label>Nombre del video</label><input type="text" id="up-name" maxlength="80" value="${esc(UP.name)}" placeholder="Ej. Puebla" ${UP.busy ? 'disabled' : ''}></div>
+    <label class="drop ${UP.busy ? 'off' : ''}" id="up-drop"><input type="file" id="up-files" multiple accept="image/*,video/*" ${UP.busy ? 'disabled' : ''} hidden>
+      <b>📥 Arrastra aquí tus fotos y videos</b><span>o da clic para elegirlos (hasta ${MAX_UP_FILES} por vez)</span></label>
+    ${rows ? `<div class="uplist">${rows}</div>` : ''}
+    <div class="mfoot" style="justify-content:flex-start">
+      <button class="btn" data-act="up-go" ${!n || UP.busy ? 'disabled' : ''}>${UP.busy ? 'Subiendo… no cierres esta página' : `⬆️ Subir ${n || ''} archivo${n===1?'':'s'}`}</button>
+      ${UP.files.length && !UP.busy ? `<button class="btn sec" data-act="up-clear">Quitar todos</button>` : ''}
+    </div></div>`;
+}
+const upLabel = f => f.state === 'ok' ? '✓ Listo' : f.state === 'error' ? 'Falló' : f.state === 'up' ? (f.pct || 0) + '%' : 'En espera';
+function upAdd(list){
+  for(const file of list){
+    if(UP.files.length >= MAX_UP_FILES){ toast(`Máximo ${MAX_UP_FILES} archivos por subida`); break; }
+    if(!file.size) continue;
+    if(UP.files.some(f => f.file.name === file.name && f.file.size === file.size)) continue;
+    UP.files.push({id:++UP.seq, file, state:'wait', pct:0});
+  }
+  UP.result = null; render();
+}
+function upPaint(f){
+  const el = document.getElementById('upf-' + f.id); if(!el) return;
+  el.className = 'upf ' + f.state; el.querySelector('.pb i').style.width = (f.pct || 0) + '%'; el.querySelector('.fst').textContent = upLabel(f);
+}
+function upPut(url, f){
+  return new Promise((ok, fail) => {
+    const x = new XMLHttpRequest(); x.open('PUT', url);
+    x.upload.onprogress = e => { if(e.lengthComputable){ f.pct = Math.min(99, Math.round(e.loaded / e.total * 100)); upPaint(f); } };
+    x.onload = () => x.status >= 200 && x.status < 300 ? ok() : fail(new Error('HTTP ' + x.status));
+    x.onerror = () => fail(new Error('red'));
+    x.send(f.file);
+  });
+}
+async function upGo(){
+  UP.name = ($('#up-name') ? $('#up-name').value : UP.name).trim();
+  if(!UP.name){ toast('Escribe el nombre del video'); $('#up-name') && $('#up-name').focus(); return; }
+  const files = UP.files.filter(f => f.state !== 'ok'); if(!files.length) return;
+  UP.busy = true; UP.result = null; files.forEach(f => { f.state = 'wait'; f.pct = 0; }); render();
+  let r;
+  try{ r = await fnCall({action:'start', key:PORTAL_KEY, name:UP.name, files:files.map(f => ({name:f.file.name, size:f.file.size, type:f.file.type}))}); }
+  catch(e){ UP.busy = false; render(); toast(e.message); return; }
+  let ok = 0, bytes = 0;
+  for(let i = 0; i < files.length; i++){
+    const f = files[i]; f.state = 'up'; upPaint(f);
+    try{ await upPut(r.sessions[i], f); f.state = 'ok'; f.pct = 100; ok++; bytes += f.file.size; }
+    catch(e){ f.state = 'error'; }
+    upPaint(f);
+  }
+  await fnCall({action:'done', key:PORTAL_KEY, upload_id:r.upload_id, ok, bytes}).catch(() => {});
+  UP.busy = false; UP.result = {ok, total:files.length, month:r.month, name:r.name};
+  UP.files = UP.files.filter(f => f.state !== 'ok'); render();
+}
+window.addEventListener('beforeunload', e => { if(UP.busy){ e.preventDefault(); e.returnValue = ''; } });
+document.addEventListener('input', e => { if(e.target.id === 'up-name') UP.name = e.target.value; });
+document.addEventListener('change', e => { if(e.target.id === 'up-files'){ upAdd(e.target.files); e.target.value = ''; } });
+document.addEventListener('dragover', e => { const d = e.target.closest && e.target.closest('#up-drop'); if(d){ e.preventDefault(); d.classList.add('hover'); } });
+document.addEventListener('dragleave', e => { const d = e.target.closest && e.target.closest('#up-drop'); if(d) d.classList.remove('hover'); });
+document.addEventListener('drop', e => { const d = e.target.closest && e.target.closest('#up-drop'); if(d){ e.preventDefault(); d.classList.remove('hover'); if(!UP.busy) upAdd(e.dataTransfer.files); } });
 function portalForm(s){
   s = s || {}; const editing = !!s.id;
   const body = `<div class="f"><label>Título del video</label><input type="text" name="title" maxlength="300" value="${esc(s.title||'')}" placeholder="Ej. 3 tips para emprender"></div>
@@ -1658,6 +1852,10 @@ const H = {
   'pt-tab':(t) => { P.tab = t.dataset.v; render(); },
   'pt-toggle':(t) => { P.open = P.open === t.dataset.id ? null : t.dataset.id; render(); },
   'pt-new':() => portalForm(),
+  'up-go':() => upGo(),
+  'up-clear':() => { UP.files = []; UP.result = null; render(); },
+  'up-rm':(t) => { UP.files = UP.files.filter(f => String(f.id) !== t.dataset.id); render(); },
+  'drive-connect':() => connectDrive(),
   'pt-edit':(t) => portalForm(P.scripts.find(x => x.id === t.dataset.id)),
   'script-new':() => scriptForm(),
   'script-edit':(t) => scriptForm(S.scripts.find(x => x.id === t.dataset.id)),
