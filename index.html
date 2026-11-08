@@ -875,7 +875,7 @@ function uploadsPanel(c, ups){
     </div>`;
   }).join('');
   return `<div class="cbox"><h4>Subida de contenido</h4>
-      <p>${c.uploads_enabled ? 'Activada: el cliente ve el botón “Subir contenido” en su portal. Cada subida va a su Drive en MES / NOMBRE DEL VIDEO.'
+      <p>${c.uploads_enabled ? 'Activada: el cliente ve el botón “Subir contenido” en su portal. Cada subida va a su Drive en AÑO / MES / NOMBRE DEL VIDEO (ej. 2026 / NOVIEMBRE / PUEBLA).'
         : 'Apagada para este cliente.' + (isAdmin() ? ' Actívala en “Editar”.' : '')}
       ${driveUrl ? ` <a href="${esc(driveUrl)}" target="_blank" rel="noopener">Abrir su carpeta general</a>` : ''}</p></div>
     ${rows || `<div class="empty"><h3>Sin subidas todavía</h3>Aquí aparecerá cada vez que el cliente suba fotos o videos.</div>`}`;
@@ -965,7 +965,7 @@ function clientForm(c){
     <div class="hint">Si lo apagas, los guiones solo los ven ustedes y los editores; el cliente no los ve en su link.</div></div>
   <div class="f"><label class="chkrow"><input type="checkbox" name="uploads_enabled" ${c.uploads_enabled ? 'checked' : ''}> Marca personal: el cliente puede subir su contenido (fotos y videos)</label></div>
   <div class="f"><label>Carpeta de Drive del cliente</label><input type="url" name="drive_folder_link" value="${esc(c.drive_folder_link||'')}" placeholder="https://drive.google.com/drive/folders/…">
-    <div class="hint">La carpeta general del cliente (ej. LULU OLVERA - MARCA PERSONAL). Ahí se crean solas las carpetas MES / NOMBRE DEL VIDEO.</div></div>
+    <div class="hint">La carpeta general del cliente (ej. LULU OLVERA - MARCA PERSONAL). Ahí se crean solas las carpetas AÑO / MES / NOMBRE DEL VIDEO.</div></div>
   <div class="f"><label>Notas</label><textarea name="notes" rows="3">${esc(c.notes||'')}</textarea></div>`;
   openModal(editing ? 'Editar cliente' : 'Nuevo cliente', body, async fd => {
     const link = (fd.get('folder_link')||'').trim(), clink = (fd.get('client_folder_link')||'').trim();
